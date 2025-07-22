@@ -1,7 +1,7 @@
 # xoptpy
 
 <div align="center">
-  <img src="logo.png" alt="xoptpy Logo" width="200"/>
+  <img src="https://avatars.githubusercontent.com/u/222255527?s=48&v=4" alt="xoptpy Logo" width="200"/>
 </div>
 
 **eXtreme OPTimization** - More optimizing agentic AI
