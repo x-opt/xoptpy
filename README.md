@@ -3,8 +3,7 @@
 
   <img src="logo.jpg" alt="xoptpy Logo" width="200"/>
 
-  <h2><strong>eXtreme OPTimization</strong></h2>
-  <p><em>More optimizing agentic AI</em></p>
+  <h3>eXtreme OPTimization for agentic AI</h3>
 </div>
 
 ---
