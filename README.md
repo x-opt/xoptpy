@@ -1,10 +1,13 @@
-# xoptpy
-
 <div align="center">
+  <h1>xoptpy</h1>
+
   <img src="logo.jpg" alt="xoptpy Logo" width="200"/>
-  **eXtreme OPTimization** - More optimizing agentic AI
+
+  <h2><strong>eXtreme OPTimization</strong></h2>
+  <p><em>More optimizing agentic AI</em></p>
 </div>
 
+---
 
 ## 🚧 Under Development
 
