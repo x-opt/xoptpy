@@ -443,6 +443,6 @@ def process_with_monitoring(input_data: dict) -> dict:
 
 ## Next Steps
 
-- [API Reference](../api/overview) - Complete API documentation
+- [API Reference](./api/overview) - Complete API documentation
 - [Creating Modules](./creating-modules) - Learn about modules vs tools
 - [CLI Usage](./cli-usage) - Command-line reference
