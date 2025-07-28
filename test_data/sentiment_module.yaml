@@ -1,0 +1,90 @@
+apiVersion: "ai-registry/v1"
+kind: "module"
+metadata:
+  name: "sentiment-analyzer"
+  namespace: "nlp"
+  version: "2.1.0"
+  description: "Advanced sentiment analysis module using transformer models"
+  author: "nlp-team@company.com"
+  license: "MIT"
+  tags:
+    - "sentiment"
+    - "nlp"
+    - "analysis"
+    - "transformer"
+spec:
+  interface:
+    input_schema:
+      type: "object"
+      properties:
+        text:
+          type: "string"
+          description: "Text to analyze for sentiment"
+        language:
+          type: "string"
+          enum: ["en", "es", "fr", "de"]
+          default: "en"
+          description: "Language of the input text"
+        model_type:
+          type: "string"
+          enum: ["fast", "accurate"]
+          default: "fast"
+          description: "Model type to use for analysis"
+      required: ["text"]
+    output_schema:
+      type: "object"
+      properties:
+        sentiment:
+          type: "string"
+          enum: ["positive", "negative", "neutral"]
+          description: "Detected sentiment"
+        confidence:
+          type: "number"
+          minimum: 0
+          maximum: 1
+          description: "Confidence score for the sentiment prediction"
+        scores:
+          type: "object"
+          properties:
+            positive:
+              type: "number"
+            negative:
+              type: "number"
+            neutral:
+              type: "number"
+          description: "Raw scores for each sentiment class"
+        processing_time:
+          type: "number"
+          description: "Processing time in milliseconds"
+      required: ["sentiment", "confidence"]
+  implementation:
+    type: "function"
+    entry_point: "./sentiment_analyzer.py:analyze_sentiment"
+    requirements:
+      - "transformers>=4.21.0"
+      - "torch>=1.12.0"
+      - "numpy>=1.21.0"
+      - "scikit-learn>=1.1.0"
+    reasoning_engine: "huggingface-transformers"
+  dependencies:
+    modules:
+      - "utils/text-preprocessor@1.2.0"
+      - "utils/language-detector@0.5.0"
+  tunable:
+    parameters:
+      confidence_threshold:
+        type: "number"
+        description: "Minimum confidence threshold for predictions"
+        default_value: 0.7
+      model_name:
+        type: "string"
+        description: "HuggingFace model to use"
+        default_value: "cardiffnlp/twitter-roberta-base-sentiment-latest"
+      batch_size:
+        type: "integer"
+        description: "Batch size for processing multiple texts"
+        default_value: 32
+    optimization_targets:
+      - "accuracy"
+      - "latency"
+    tuning_method: "bayesian_optimization"

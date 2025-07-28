@@ -1,0 +1,35 @@
+apiVersion: "ai-registry/v1"
+kind: "module"
+metadata:
+  name: "hello-world"
+  namespace: "examples"
+  version: "1.0.0"
+  description: "Simple hello world module for testing"
+  author: "test@example.com"
+  license: "MIT"
+  tags:
+    - "example"
+    - "test"
+    - "simple"
+spec:
+  interface:
+    input_schema:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          default: "World"
+          description: "Name to greet"
+      required: []
+    output_schema:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+          description: "Greeting message"
+      required: ["message"]
+  implementation:
+    type: "function"
+    entry_point: "./hello.py:greet"
+    requirements:
+      - "python>=3.8"

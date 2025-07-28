@@ -1,0 +1,125 @@
+apiVersion: "ai-registry/v1"
+kind: "tool"
+metadata:
+  name: "data-validator"
+  namespace: "utils"
+  version: "2.0.0"
+  description: "Comprehensive data validation and quality assessment tool"
+  author: "data-team@company.com"
+  license: "MIT"
+  tags:
+    - "validation"
+    - "data-quality"
+    - "schema"
+    - "utils"
+spec:
+  interface:
+    input_schema:
+      type: "object"
+      properties:
+        data:
+          oneOf:
+            - type: "object"
+            - type: "array"
+          description: "Data to validate (object or array)"
+        schema:
+          type: "object"
+          description: "JSON Schema to validate against"
+        validation_level:
+          type: "string"
+          enum: ["strict", "lenient", "warning_only"]
+          default: "strict"
+          description: "Validation strictness level"
+        custom_rules:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+              rule:
+                type: "string"
+              severity:
+                type: "string"
+                enum: ["error", "warning", "info"]
+          description: "Custom validation rules to apply"
+      required: ["data", "schema"]
+    output_schema:
+      type: "object"
+      properties:
+        is_valid:
+          type: "boolean"
+          description: "Whether the data passed validation"
+        errors:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              path:
+                type: "string"
+              message:
+                type: "string"
+              severity:
+                type: "string"
+          description: "List of validation errors"
+        warnings:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              path:
+                type: "string"
+              message:
+                type: "string"
+          description: "List of validation warnings"
+        statistics:
+          type: "object"
+          properties:
+            total_fields:
+              type: "integer"
+            valid_fields:
+              type: "integer"
+            error_count:
+              type: "integer"
+            warning_count:
+              type: "integer"
+          description: "Validation statistics"
+        quality_score:
+          type: "number"
+          minimum: 0
+          maximum: 1
+          description: "Overall data quality score"
+      required: ["is_valid", "errors", "quality_score"]
+  implementation:
+    type: "react_agent"
+    entry_point: "./data_validator.py:ValidationAgent"
+    requirements:
+      - "jsonschema>=4.17.0"
+      - "pandas>=1.5.0"
+      - "numpy>=1.21.0"
+      - "pydantic>=2.0.0"
+    reasoning_engine: "openai-gpt4"
+  dependencies:
+    tools:
+      - "utils/schema-generator@1.1.0"
+  tunable:
+    parameters:
+      max_errors:
+        type: "integer"
+        description: "Maximum number of errors to report"
+        default_value: 100
+      include_suggestions:
+        type: "boolean"
+        description: "Include suggestions for fixing errors"
+        default_value: true
+      quality_weights:
+        type: "object"
+        description: "Weights for different quality metrics"
+        default_value:
+          completeness: 0.3
+          accuracy: 0.4
+          consistency: 0.3
+    optimization_targets:
+      - "accuracy"
+      - "coverage"
+    tuning_method: "grid_search"

@@ -1,0 +1,23 @@
+{
+  "id": "intro",
+  "title": "Introduction to xopt",
+  "description": "xopt is the open source registry for composable AI modules and tools. Think of it as npm for AI components - discover, share, and optimize reusable AI functionality across your entire organization.",
+  "source": "@site/docs/intro.md",
+  "sourceDirName": ".",
+  "slug": "/intro",
+  "permalink": "/docs/intro",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/x-opt/xoptpy/tree/main/docs/docs/intro.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  },
+  "sidebar": "tutorialSidebar",
+  "next": {
+    "title": "Getting Started",
+    "permalink": "/docs/getting-started"
+  }
+}

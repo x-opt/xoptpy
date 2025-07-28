@@ -1,0 +1,23 @@
+{
+  "id": "api/overview",
+  "title": "API Overview",
+  "description": "The xopt Python client library provides a programmatic interface to interact with the xopt registry API.",
+  "source": "@site/docs/api/overview.md",
+  "sourceDirName": "api",
+  "slug": "/api/overview",
+  "permalink": "/docs/api/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/x-opt/xoptpy/tree/main/docs/docs/api/overview.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  },
+  "sidebar": "apiSidebar",
+  "next": {
+    "title": "Client Reference",
+    "permalink": "/docs/api/client"
+  }
+}

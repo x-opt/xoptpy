@@ -1,0 +1,23 @@
+{
+  "id": "creating-modules",
+  "title": "Creating Modules",
+  "description": "Learn how to create and publish your own AI modules to the xopt registry.",
+  "source": "@site/docs/creating-modules.md",
+  "sourceDirName": ".",
+  "slug": "/creating-modules",
+  "permalink": "/docs/creating-modules",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/x-opt/xoptpy/tree/main/docs/docs/creating-modules.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "CLI Usage Guide",
+    "permalink": "/docs/cli-usage"
+  }
+}

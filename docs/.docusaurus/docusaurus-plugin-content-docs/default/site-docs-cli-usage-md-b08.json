@@ -1,0 +1,27 @@
+{
+  "id": "cli-usage",
+  "title": "CLI Usage Guide",
+  "description": "The XOptPy CLI provides a command-line interface for interacting with the AI Registry API.",
+  "source": "@site/docs/cli-usage.md",
+  "sourceDirName": ".",
+  "slug": "/cli-usage",
+  "permalink": "/docs/cli-usage",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/x-opt/xoptpy/tree/main/docs/docs/cli-usage.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Getting Started",
+    "permalink": "/docs/getting-started"
+  },
+  "next": {
+    "title": "Creating Modules",
+    "permalink": "/docs/creating-modules"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "api/client",
+  "title": "Client Reference",
+  "description": "Complete reference for the XoptRegistryClient class.",
+  "source": "@site/docs/api/client.md",
+  "sourceDirName": "api",
+  "slug": "/api/client",
+  "permalink": "/docs/api/client",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/x-opt/xoptpy/tree/main/docs/docs/api/client.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "apiSidebar",
+  "previous": {
+    "title": "API Overview",
+    "permalink": "/docs/api/overview"
+  }
+}
