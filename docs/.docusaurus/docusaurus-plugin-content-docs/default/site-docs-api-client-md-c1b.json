@@ -5,7 +5,7 @@
   "source": "@site/docs/api/client.md",
   "sourceDirName": "api",
   "slug": "/api/client",
-  "permalink": "/xoptpy/docs/api/client",
+  "permalink": "/docs/api/client",
   "draft": false,
   "unlisted": false,
   "editUrl": "https://github.com/x-opt/xoptpy/tree/main/docs/docs/api/client.md",
@@ -18,10 +18,10 @@
   "sidebar": "apiSidebar",
   "previous": {
     "title": "API Overview",
-    "permalink": "/xoptpy/docs/api/overview"
+    "permalink": "/docs/api/overview"
   },
   "next": {
     "title": "Models Reference",
-    "permalink": "/xoptpy/docs/api/models"
+    "permalink": "/docs/api/models"
   }
 }

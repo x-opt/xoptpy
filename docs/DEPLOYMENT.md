@@ -53,6 +53,11 @@ Note: Manual deployment requires authentication to push to the `gh-pages` branch
 
 Once deployed, your documentation will be available at:
 ```
+https://docs.xopt.ai
+```
+
+For GitHub Pages default URL, it would be:
+```
 https://x-opt.github.io/xoptpy/
 ```
 
@@ -152,7 +157,16 @@ To use a custom domain:
    baseUrl: '/',
    ```
 
-3. Configure DNS to point to GitHub Pages
+3. Configure DNS to point to GitHub Pages:
+   - For apex domain: A records pointing to GitHub Pages IPs
+   - For subdomain: CNAME record pointing to `x-opt.github.io`
+   
+   DNS Configuration for `docs.xopt.ai`:
+   ```
+   Type: CNAME
+   Name: docs
+   Value: x-opt.github.io
+   ```
 
 ## Content Updates
 

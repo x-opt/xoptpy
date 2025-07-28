@@ -1,5 +1,5 @@
 {
-  "/xoptpy/blog-93a": {
+  "/blog-b2f": {
     "__comp": "a6aa9e1f",
     "__context": {
       "plugin": "36994c47"
@@ -19,16 +19,16 @@
         "content": "925b3f96"
       }
     ],
-    "__props": "5ca72073"
+    "__props": "c15d9823"
   },
-  "/xoptpy/blog/archive-d7b": {
+  "/blog/archive-182": {
     "__comp": "9e4087bc",
     "__context": {
       "plugin": "36994c47"
     },
-    "__props": "3d25b399"
+    "__props": "f81c1134"
   },
-  "/xoptpy/blog/authors-11f": {
+  "/blog/authors-0b7": {
     "__comp": "621db11d",
     "__context": {
       "data": {
@@ -37,9 +37,9 @@
       "plugin": "36994c47"
     },
     "sidebar": "814f3328",
-    "__props": "0c5cc221"
+    "__props": "ef8b811a"
   },
-  "/xoptpy/blog/authors/all-sebastien-lorber-articles-b21": {
+  "/blog/authors/all-sebastien-lorber-articles-4a1": {
     "__comp": "33fc5bb8",
     "__context": {
       "data": {
@@ -59,9 +59,9 @@
       }
     ],
     "sidebar": "814f3328",
-    "__props": "23596786"
+    "__props": "c9c9bef8"
   },
-  "/xoptpy/blog/authors/yangshun-bd6": {
+  "/blog/authors/yangshun-a68": {
     "__comp": "33fc5bb8",
     "__context": {
       "data": {
@@ -81,9 +81,9 @@
       }
     ],
     "sidebar": "814f3328",
-    "__props": "4d013b5f"
+    "__props": "1dea6ca3"
   },
-  "/xoptpy/blog/first-blog-post-266": {
+  "/blog/first-blog-post-89a": {
     "__comp": "ccc49370",
     "__context": {
       "data": {
@@ -94,7 +94,7 @@
     "sidebar": "814f3328",
     "content": "e273c56f"
   },
-  "/xoptpy/blog/long-blog-post-d5f": {
+  "/blog/long-blog-post-9ad": {
     "__comp": "ccc49370",
     "__context": {
       "data": {
@@ -105,7 +105,7 @@
     "sidebar": "814f3328",
     "content": "73664a40"
   },
-  "/xoptpy/blog/mdx-blog-post-b06": {
+  "/blog/mdx-blog-post-e9f": {
     "__comp": "ccc49370",
     "__context": {
       "data": {
@@ -116,15 +116,15 @@
     "sidebar": "814f3328",
     "content": "59362658"
   },
-  "/xoptpy/blog/tags-8fd": {
+  "/blog/tags-287": {
     "__comp": "01a85c17",
     "__context": {
       "plugin": "36994c47"
     },
     "sidebar": "814f3328",
-    "__props": "62493aba"
+    "__props": "3a2db09e"
   },
-  "/xoptpy/blog/tags/docusaurus-f54": {
+  "/blog/tags/docusaurus-704": {
     "__comp": "6875c492",
     "__context": {
       "plugin": "36994c47"
@@ -144,9 +144,9 @@
         "content": "925b3f96"
       }
     ],
-    "__props": "a50abeef"
+    "__props": "3217192f"
   },
-  "/xoptpy/blog/tags/facebook-1a1": {
+  "/blog/tags/facebook-858": {
     "__comp": "6875c492",
     "__context": {
       "plugin": "36994c47"
@@ -157,9 +157,9 @@
         "content": "7661071f"
       }
     ],
-    "__props": "1ccdd8ec"
+    "__props": "e5aefb32"
   },
-  "/xoptpy/blog/tags/hello-cf5": {
+  "/blog/tags/hello-299": {
     "__comp": "6875c492",
     "__context": {
       "plugin": "36994c47"
@@ -173,9 +173,9 @@
         "content": "8717b14a"
       }
     ],
-    "__props": "7b98af81"
+    "__props": "f82cd581"
   },
-  "/xoptpy/blog/tags/hola-43b": {
+  "/blog/tags/hola-00d": {
     "__comp": "6875c492",
     "__context": {
       "plugin": "36994c47"
@@ -186,9 +186,9 @@
         "content": "925b3f96"
       }
     ],
-    "__props": "b94aed9c"
+    "__props": "5e90a9b3"
   },
-  "/xoptpy/blog/welcome-d78": {
+  "/blog/welcome-d2b": {
     "__comp": "ccc49370",
     "__context": {
       "data": {
@@ -199,95 +199,95 @@
     "sidebar": "814f3328",
     "content": "d9f32620"
   },
-  "/xoptpy/markdown-page-146": {
+  "/markdown-page-3d7": {
     "__comp": "1f391b9e",
     "__context": {
       "plugin": "a7456010"
     },
     "content": "393be207"
   },
-  "/xoptpy/docs-60f": {
+  "/docs-3e9": {
     "__comp": "5e95c892",
     "__context": {
       "plugin": "aba21aa0"
     }
   },
-  "/xoptpy/docs-81e": {
+  "/docs-43a": {
     "__comp": "a7bd4aaa",
-    "__props": "067cceb9"
+    "__props": "0058b4c6"
   },
-  "/xoptpy/docs-d78": {
+  "/docs-493": {
     "__comp": "a94703ab"
   },
-  "/xoptpy/docs/api/client-67a": {
+  "/docs/api/client-9b3": {
     "__comp": "17896441",
     "content": "c1bcbd07"
   },
-  "/xoptpy/docs/api/exceptions-49b": {
+  "/docs/api/exceptions-fdc": {
     "__comp": "17896441",
     "content": "d9db67ef"
   },
-  "/xoptpy/docs/api/models-932": {
+  "/docs/api/models-093": {
     "__comp": "17896441",
     "content": "4e61bb45"
   },
-  "/xoptpy/docs/api/overview-8c4": {
+  "/docs/api/overview-1fc": {
     "__comp": "17896441",
     "content": "65df3d35"
   },
-  "/xoptpy/docs/cli-usage-23a": {
+  "/docs/cli-usage-b0d": {
     "__comp": "17896441",
     "content": "b08ef44b"
   },
-  "/xoptpy/docs/creating-modules-8cf": {
+  "/docs/creating-modules-195": {
     "__comp": "17896441",
     "content": "d6ec8d3f"
   },
-  "/xoptpy/docs/getting-started-fda": {
+  "/docs/getting-started-2a1": {
     "__comp": "17896441",
     "content": "d589d3a7"
   },
-  "/xoptpy/docs/intro-33d": {
+  "/docs/intro-61d": {
     "__comp": "17896441",
     "content": "0e384e19"
   },
-  "/xoptpy/docs/tutorial-basics/congratulations-0da": {
+  "/docs/tutorial-basics/congratulations-70e": {
     "__comp": "17896441",
     "content": "822bd8ab"
   },
-  "/xoptpy/docs/tutorial-basics/create-a-blog-post-6dd": {
+  "/docs/tutorial-basics/create-a-blog-post-315": {
     "__comp": "17896441",
     "content": "533a09ca"
   },
-  "/xoptpy/docs/tutorial-basics/create-a-document-847": {
+  "/docs/tutorial-basics/create-a-document-f86": {
     "__comp": "17896441",
     "content": "1e4232ab"
   },
-  "/xoptpy/docs/tutorial-basics/create-a-page-418": {
+  "/docs/tutorial-basics/create-a-page-9f6": {
     "__comp": "17896441",
     "content": "5c868d36"
   },
-  "/xoptpy/docs/tutorial-basics/deploy-your-site-57b": {
+  "/docs/tutorial-basics/deploy-your-site-b91": {
     "__comp": "17896441",
     "content": "f55d3e7a"
   },
-  "/xoptpy/docs/tutorial-basics/markdown-features-1a4": {
+  "/docs/tutorial-basics/markdown-features-272": {
     "__comp": "17896441",
     "content": "18c41134"
   },
-  "/xoptpy/docs/tutorial-extras/manage-docs-versions-687": {
+  "/docs/tutorial-extras/manage-docs-versions-a34": {
     "__comp": "17896441",
     "content": "dff1c289"
   },
-  "/xoptpy/docs/tutorial-extras/translate-your-site-ca6": {
+  "/docs/tutorial-extras/translate-your-site-739": {
     "__comp": "17896441",
     "content": "e44a2883"
   },
-  "/xoptpy/docs/working-with-tools-d63": {
+  "/docs/working-with-tools-728": {
     "__comp": "17896441",
     "content": "179d5d1b"
   },
-  "/xoptpy/-8dc": {
+  "/-e5f": {
     "__comp": "1df93b7f",
     "__context": {
       "plugin": "a7456010"

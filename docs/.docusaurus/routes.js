@@ -3,183 +3,183 @@ import ComponentCreator from '@docusaurus/ComponentCreator';
 
 export default [
   {
-    path: '/xoptpy/blog',
-    component: ComponentCreator('/xoptpy/blog', '93a'),
+    path: '/blog',
+    component: ComponentCreator('/blog', 'b2f'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/archive',
-    component: ComponentCreator('/xoptpy/blog/archive', 'd7b'),
+    path: '/blog/archive',
+    component: ComponentCreator('/blog/archive', '182'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/authors',
-    component: ComponentCreator('/xoptpy/blog/authors', '11f'),
+    path: '/blog/authors',
+    component: ComponentCreator('/blog/authors', '0b7'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/authors/all-sebastien-lorber-articles',
-    component: ComponentCreator('/xoptpy/blog/authors/all-sebastien-lorber-articles', 'b21'),
+    path: '/blog/authors/all-sebastien-lorber-articles',
+    component: ComponentCreator('/blog/authors/all-sebastien-lorber-articles', '4a1'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/authors/yangshun',
-    component: ComponentCreator('/xoptpy/blog/authors/yangshun', 'bd6'),
+    path: '/blog/authors/yangshun',
+    component: ComponentCreator('/blog/authors/yangshun', 'a68'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/first-blog-post',
-    component: ComponentCreator('/xoptpy/blog/first-blog-post', '266'),
+    path: '/blog/first-blog-post',
+    component: ComponentCreator('/blog/first-blog-post', '89a'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/long-blog-post',
-    component: ComponentCreator('/xoptpy/blog/long-blog-post', 'd5f'),
+    path: '/blog/long-blog-post',
+    component: ComponentCreator('/blog/long-blog-post', '9ad'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/mdx-blog-post',
-    component: ComponentCreator('/xoptpy/blog/mdx-blog-post', 'b06'),
+    path: '/blog/mdx-blog-post',
+    component: ComponentCreator('/blog/mdx-blog-post', 'e9f'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/tags',
-    component: ComponentCreator('/xoptpy/blog/tags', '8fd'),
+    path: '/blog/tags',
+    component: ComponentCreator('/blog/tags', '287'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/tags/docusaurus',
-    component: ComponentCreator('/xoptpy/blog/tags/docusaurus', 'f54'),
+    path: '/blog/tags/docusaurus',
+    component: ComponentCreator('/blog/tags/docusaurus', '704'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/tags/facebook',
-    component: ComponentCreator('/xoptpy/blog/tags/facebook', '1a1'),
+    path: '/blog/tags/facebook',
+    component: ComponentCreator('/blog/tags/facebook', '858'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/tags/hello',
-    component: ComponentCreator('/xoptpy/blog/tags/hello', 'cf5'),
+    path: '/blog/tags/hello',
+    component: ComponentCreator('/blog/tags/hello', '299'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/tags/hola',
-    component: ComponentCreator('/xoptpy/blog/tags/hola', '43b'),
+    path: '/blog/tags/hola',
+    component: ComponentCreator('/blog/tags/hola', '00d'),
     exact: true
   },
   {
-    path: '/xoptpy/blog/welcome',
-    component: ComponentCreator('/xoptpy/blog/welcome', 'd78'),
+    path: '/blog/welcome',
+    component: ComponentCreator('/blog/welcome', 'd2b'),
     exact: true
   },
   {
-    path: '/xoptpy/markdown-page',
-    component: ComponentCreator('/xoptpy/markdown-page', '146'),
+    path: '/markdown-page',
+    component: ComponentCreator('/markdown-page', '3d7'),
     exact: true
   },
   {
-    path: '/xoptpy/docs',
-    component: ComponentCreator('/xoptpy/docs', '60f'),
+    path: '/docs',
+    component: ComponentCreator('/docs', '3e9'),
     routes: [
       {
-        path: '/xoptpy/docs',
-        component: ComponentCreator('/xoptpy/docs', '81e'),
+        path: '/docs',
+        component: ComponentCreator('/docs', '43a'),
         routes: [
           {
-            path: '/xoptpy/docs',
-            component: ComponentCreator('/xoptpy/docs', 'd78'),
+            path: '/docs',
+            component: ComponentCreator('/docs', '493'),
             routes: [
               {
-                path: '/xoptpy/docs/api/client',
-                component: ComponentCreator('/xoptpy/docs/api/client', '67a'),
+                path: '/docs/api/client',
+                component: ComponentCreator('/docs/api/client', '9b3'),
                 exact: true,
                 sidebar: "apiSidebar"
               },
               {
-                path: '/xoptpy/docs/api/exceptions',
-                component: ComponentCreator('/xoptpy/docs/api/exceptions', '49b'),
+                path: '/docs/api/exceptions',
+                component: ComponentCreator('/docs/api/exceptions', 'fdc'),
                 exact: true,
                 sidebar: "apiSidebar"
               },
               {
-                path: '/xoptpy/docs/api/models',
-                component: ComponentCreator('/xoptpy/docs/api/models', '932'),
+                path: '/docs/api/models',
+                component: ComponentCreator('/docs/api/models', '093'),
                 exact: true,
                 sidebar: "apiSidebar"
               },
               {
-                path: '/xoptpy/docs/api/overview',
-                component: ComponentCreator('/xoptpy/docs/api/overview', '8c4'),
+                path: '/docs/api/overview',
+                component: ComponentCreator('/docs/api/overview', '1fc'),
                 exact: true,
                 sidebar: "apiSidebar"
               },
               {
-                path: '/xoptpy/docs/cli-usage',
-                component: ComponentCreator('/xoptpy/docs/cli-usage', '23a'),
+                path: '/docs/cli-usage',
+                component: ComponentCreator('/docs/cli-usage', 'b0d'),
                 exact: true,
                 sidebar: "tutorialSidebar"
               },
               {
-                path: '/xoptpy/docs/creating-modules',
-                component: ComponentCreator('/xoptpy/docs/creating-modules', '8cf'),
+                path: '/docs/creating-modules',
+                component: ComponentCreator('/docs/creating-modules', '195'),
                 exact: true,
                 sidebar: "tutorialSidebar"
               },
               {
-                path: '/xoptpy/docs/getting-started',
-                component: ComponentCreator('/xoptpy/docs/getting-started', 'fda'),
+                path: '/docs/getting-started',
+                component: ComponentCreator('/docs/getting-started', '2a1'),
                 exact: true,
                 sidebar: "tutorialSidebar"
               },
               {
-                path: '/xoptpy/docs/intro',
-                component: ComponentCreator('/xoptpy/docs/intro', '33d'),
+                path: '/docs/intro',
+                component: ComponentCreator('/docs/intro', '61d'),
                 exact: true,
                 sidebar: "tutorialSidebar"
               },
               {
-                path: '/xoptpy/docs/tutorial-basics/congratulations',
-                component: ComponentCreator('/xoptpy/docs/tutorial-basics/congratulations', '0da'),
+                path: '/docs/tutorial-basics/congratulations',
+                component: ComponentCreator('/docs/tutorial-basics/congratulations', '70e'),
                 exact: true
               },
               {
-                path: '/xoptpy/docs/tutorial-basics/create-a-blog-post',
-                component: ComponentCreator('/xoptpy/docs/tutorial-basics/create-a-blog-post', '6dd'),
+                path: '/docs/tutorial-basics/create-a-blog-post',
+                component: ComponentCreator('/docs/tutorial-basics/create-a-blog-post', '315'),
                 exact: true
               },
               {
-                path: '/xoptpy/docs/tutorial-basics/create-a-document',
-                component: ComponentCreator('/xoptpy/docs/tutorial-basics/create-a-document', '847'),
+                path: '/docs/tutorial-basics/create-a-document',
+                component: ComponentCreator('/docs/tutorial-basics/create-a-document', 'f86'),
                 exact: true
               },
               {
-                path: '/xoptpy/docs/tutorial-basics/create-a-page',
-                component: ComponentCreator('/xoptpy/docs/tutorial-basics/create-a-page', '418'),
+                path: '/docs/tutorial-basics/create-a-page',
+                component: ComponentCreator('/docs/tutorial-basics/create-a-page', '9f6'),
                 exact: true
               },
               {
-                path: '/xoptpy/docs/tutorial-basics/deploy-your-site',
-                component: ComponentCreator('/xoptpy/docs/tutorial-basics/deploy-your-site', '57b'),
+                path: '/docs/tutorial-basics/deploy-your-site',
+                component: ComponentCreator('/docs/tutorial-basics/deploy-your-site', 'b91'),
                 exact: true
               },
               {
-                path: '/xoptpy/docs/tutorial-basics/markdown-features',
-                component: ComponentCreator('/xoptpy/docs/tutorial-basics/markdown-features', '1a4'),
+                path: '/docs/tutorial-basics/markdown-features',
+                component: ComponentCreator('/docs/tutorial-basics/markdown-features', '272'),
                 exact: true
               },
               {
-                path: '/xoptpy/docs/tutorial-extras/manage-docs-versions',
-                component: ComponentCreator('/xoptpy/docs/tutorial-extras/manage-docs-versions', '687'),
+                path: '/docs/tutorial-extras/manage-docs-versions',
+                component: ComponentCreator('/docs/tutorial-extras/manage-docs-versions', 'a34'),
                 exact: true
               },
               {
-                path: '/xoptpy/docs/tutorial-extras/translate-your-site',
-                component: ComponentCreator('/xoptpy/docs/tutorial-extras/translate-your-site', 'ca6'),
+                path: '/docs/tutorial-extras/translate-your-site',
+                component: ComponentCreator('/docs/tutorial-extras/translate-your-site', '739'),
                 exact: true
               },
               {
-                path: '/xoptpy/docs/working-with-tools',
-                component: ComponentCreator('/xoptpy/docs/working-with-tools', 'd63'),
+                path: '/docs/working-with-tools',
+                component: ComponentCreator('/docs/working-with-tools', '728'),
                 exact: true,
                 sidebar: "tutorialSidebar"
               }
@@ -190,8 +190,8 @@ export default [
     ]
   },
   {
-    path: '/xoptpy/',
-    component: ComponentCreator('/xoptpy/', '8dc'),
+    path: '/',
+    component: ComponentCreator('/', 'e5f'),
     exact: true
   },
   {

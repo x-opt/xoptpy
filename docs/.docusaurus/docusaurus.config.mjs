@@ -28,8 +28,8 @@ export default {
     },
     "experimental_router": "browser"
   },
-  "url": "https://x-opt.github.io",
-  "baseUrl": "/xoptpy/",
+  "url": "https://docs.xopt.ai",
+  "baseUrl": "/",
   "organizationName": "x-opt",
   "projectName": "xoptpy",
   "onBrokenLinks": "throw",
@@ -119,10 +119,6 @@ export default {
         {
           "title": "Community",
           "items": [
-            {
-              "label": "Stack Overflow",
-              "href": "https://stackoverflow.com/questions/tagged/docusaurus"
-            },
             {
               "label": "Discord",
               "href": "https://discordapp.com/invite/docusaurus"

@@ -5,7 +5,7 @@
   "source": "@site/docs/getting-started.md",
   "sourceDirName": ".",
   "slug": "/getting-started",
-  "permalink": "/xoptpy/docs/getting-started",
+  "permalink": "/docs/getting-started",
   "draft": false,
   "unlisted": false,
   "editUrl": "https://github.com/x-opt/xoptpy/tree/main/docs/docs/getting-started.md",
@@ -18,10 +18,10 @@
   "sidebar": "tutorialSidebar",
   "previous": {
     "title": "Introduction to xopt",
-    "permalink": "/xoptpy/docs/intro"
+    "permalink": "/docs/intro"
   },
   "next": {
     "title": "CLI Usage Guide",
-    "permalink": "/xoptpy/docs/cli-usage"
+    "permalink": "/docs/cli-usage"
   }
 }

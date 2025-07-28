@@ -1,5 +1,5 @@
 {
-  "blogBasePath": "/xoptpy/blog",
+  "blogBasePath": "/blog",
   "blogTitle": "Blog",
-  "authorsListPath": "/xoptpy/blog/authors"
+  "authorsListPath": "/blog/authors"
 }
