@@ -1,20 +1,12 @@
-# xopt
-
-<div align="center">
-  <img src="logo.jpg" alt="xopt Logo" width="200"/>
-  
-  **The Open Source Registry for AI Modules and Tools**
-  
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-  [![GitHub issues](https://img.shields.io/github/issues/your-org/xopt)](https://github.com/your-org/xopt/issues)
-</div>
-
+---
+sidebar_position: 1
 ---
 
-## 🚀 What is xopt?
+# Introduction to xopt
 
 **xopt** is the open source registry for composable AI modules and tools. Think of it as npm for AI components - discover, share, and optimize reusable AI functionality across your entire organization.
+
+## What is xopt?
 
 Stop rebuilding the same AI components. Start composing intelligent systems from battle-tested modules.
 
@@ -26,7 +18,7 @@ xopt run nlp/sentiment-analyzer text="This product is amazing!"
 xopt run research-agent topic="quantum computing" --with nlp/summarizer
 ```
 
-## 🎯 Why xopt Exists
+## Why xopt Exists
 
 **The Problem**: Every team rebuilds the same AI components - sentiment analysis, text summarization, data extraction. This wastes time, creates inconsistencies, and prevents optimization at scale.
 
@@ -36,7 +28,7 @@ xopt run research-agent topic="quantum computing" --with nlp/summarizer
 - **Optimize** entire workflows, not just individual pieces
 - **Compose** complex AI systems from simple building blocks
 
-## ✨ Key Features
+## Key Features
 
 ### 🔧 **Instant Module Execution**
 ```bash
@@ -64,7 +56,7 @@ xopt run nlp/sentiment-analyzer text="Great product!"
 - Community ratings and quality scores
 - Documentation and examples for every module
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -99,60 +91,9 @@ xopt module info nlp/sentiment-analyzer
 xopt search --trending
 ```
 
-## 🏗️ For Developers
+## Next Steps
 
-### Create Your First Module
-
-```yaml
-# manifest.yaml
-apiVersion: xopt-registry/v1
-kind: module
-metadata:
-  name: my-classifier
-  namespace: ml
-  version: 1.0.0
-  description: Custom text classifier
-
-spec:
-  interface:
-    input_schema:
-      type: object
-      properties:
-        text: {type: string}
-    output_schema:
-      type: object  
-      properties:
-        category: {type: string}
-        confidence: {type: number}
-  
-  implementation:
-    type: function
-    entry_point: ./classifier.py:classify
-    requirements:
-      - scikit-learn>=1.0.0
-```
-
-### Test and Publish
-
-```bash
-# Test locally
-xopt run . text="sample input"
-
-# Publish to registry
-xopt module publish
-
-# Install and use in other projects
-xopt install ml/my-classifier
-```
-
----
-
-<div align="center">
-
-**Ready to stop rebuilding AI components?**
-
-⭐ **[Star this repo](https://github.com/x-opt/xoptpy)** • 📖 **[Read the docs](https://docs.xopt.dev)** • 💬 **[Join Discord](https://discord.gg/xopt)**
-
-*Building the future of composable AI, one module at a time.* 🚀
-
-</div>
+- [Get Started](./getting-started) - Install and set up xopt
+- [CLI Usage](./cli-usage) - Learn the command-line interface
+- [Creating Modules](./creating-modules) - Build your own AI modules
+- [API Reference](../api/overview) - Complete API documentation

@@ -1,5 +1,5 @@
 """
-Command-line interface for the AI Registry client.
+Command-line interface for the xopt registry client.
 """
 
 import json
@@ -11,9 +11,9 @@ import click
 import yaml
 from pydantic import ValidationError
 
-from . import AIRegistryClient, ComponentType
+from . import XoptRegistryClient, ComponentType
 from .config import ClientConfig, load_config
-from .exceptions import AIRegistryClientError, APIError, NotFoundError
+from .exceptions import XoptRegistryClientError, APIError, NotFoundError
 from .models import Manifest
 
 
@@ -28,10 +28,10 @@ def load_yaml_file(file_path: str) -> dict:
         raise click.ClickException(f"Invalid YAML file: {e}")
 
 
-def create_client(base_url: Optional[str], timeout: Optional[int]) -> AIRegistryClient:
-    """Create an AI Registry client with optional overrides."""
+def create_client(base_url: Optional[str], timeout: Optional[int]) -> XoptRegistryClient:
+    """Create an xopt registry client with optional overrides."""
     config = load_config()
-    return AIRegistryClient(
+    return XoptRegistryClient(
         base_url=base_url or config.base_url,
         timeout=timeout or config.timeout,
         config=config
@@ -46,7 +46,7 @@ def handle_api_error(e: Exception):
     elif isinstance(e, APIError):
         click.echo(f"API Error {e.status_code}: {e.error_message}", err=True)
         sys.exit(1)
-    elif isinstance(e, AIRegistryClientError):
+    elif isinstance(e, XoptRegistryClientError):
         click.echo(f"Client Error: {e}", err=True)
         sys.exit(1)
     else:
@@ -55,12 +55,12 @@ def handle_api_error(e: Exception):
 
 
 @click.group()
-@click.option('--base-url', help='Base URL of the AI Registry API')
+@click.option('--base-url', help='Base URL of the xopt registry API')
 @click.option('--timeout', type=int, help='Request timeout in seconds')
 @click.option('--verbose', '-v', is_flag=True, help='Enable verbose logging')
 @click.pass_context
 def cli(ctx, base_url: Optional[str], timeout: Optional[int], verbose: bool):
-    """AI Registry CLI - Manage AI modules and tools."""
+    """xopt Registry CLI - Manage xopt modules and tools."""
     ctx.ensure_object(dict)
     ctx.obj['base_url'] = base_url
     ctx.obj['timeout'] = timeout

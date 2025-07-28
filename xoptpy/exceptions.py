@@ -1,14 +1,14 @@
 """
-Custom exceptions for the AI Registry client.
+Custom exceptions for the xopt registry client.
 """
 
 
-class AIRegistryClientError(Exception):
-    """Base exception for AI Registry client errors."""
+class XoptRegistryClientError(Exception):
+    """Base exception for xopt registry client errors."""
     pass
 
 
-class APIError(AIRegistryClientError):
+class APIError(XoptRegistryClientError):
     """Exception raised when the API returns an error response."""
     
     def __init__(self, status_code: int, error_message: str, response_data: dict = None):
@@ -18,17 +18,17 @@ class APIError(AIRegistryClientError):
         super().__init__(f"API Error {status_code}: {error_message}")
 
 
-class ConnectionError(AIRegistryClientError):
+class ConnectionError(XoptRegistryClientError):
     """Exception raised when unable to connect to the API."""
     pass
 
 
-class TimeoutError(AIRegistryClientError):
+class TimeoutError(XoptRegistryClientError):
     """Exception raised when a request times out."""
     pass
 
 
-class ValidationError(AIRegistryClientError):
+class ValidationError(XoptRegistryClientError):
     """Exception raised when response validation fails."""
     pass
 

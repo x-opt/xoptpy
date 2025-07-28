@@ -8,7 +8,21 @@
     "docs:serve": "cd docs && npm run serve",
     "docs:deploy": "cd docs && npm run deploy"
   },
-  "keywords": ["optimization", "ai", "agentic", "python"],
+  "keywords": [
+    "optimization",
+    "ai",
+    "agentic",
+    "python"
+  ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/x-opt/xoptpy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/x-opt/xoptpy/issues"
+  },
+  "homepage": "https://github.com/x-opt/xoptpy#readme"
 }

@@ -1,12 +1,12 @@
 """
-XOptPy - AI Registry Client Library
+XOptPy - xopt Registry Client Library
 
-A Python client library for interacting with the AI Registry API.
+A Python client library for interacting with the xopt registry API.
 """
 
 __version__ = "0.1.0"
 
-from .client import AIRegistryClient
+from .client import XoptRegistryClient
 from .models import (
     ComponentType,
     Error,
@@ -20,7 +20,7 @@ from .models import (
     Manifest,
 )
 from .exceptions import (
-    AIRegistryClientError,
+    XoptRegistryClientError,
     APIError,
     AuthenticationError,
     AuthorizationError,
@@ -33,7 +33,7 @@ from .exceptions import (
 )
 
 __all__ = [
-    "AIRegistryClient",
+    "XoptRegistryClient",
     "ComponentType",
     "Error",
     "VersionInfo", 
@@ -44,7 +44,7 @@ __all__ = [
     "UsageActivityEntry",
     "SearchResult",
     "Manifest",
-    "AIRegistryClientError",
+    "XoptRegistryClientError",
     "APIError",
     "AuthenticationError",
     "AuthorizationError",

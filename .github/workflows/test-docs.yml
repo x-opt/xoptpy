@@ -1,0 +1,45 @@
+name: Test Documentation
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '.github/workflows/test-docs.yml'
+      - '.github/workflows/deploy-docs.yml'
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd docs
+          npm ci
+
+      - name: Build documentation
+        run: |
+          cd docs
+          npm run build
+
+      - name: Test build output
+        run: |
+          cd docs
+          if [ ! -d "build" ]; then
+            echo "Build directory not found!"
+            exit 1
+          fi
+          if [ ! -f "build/index.html" ]; then
+            echo "Index.html not found in build!"
+            exit 1
+          fi
+          echo "Documentation build successful!"

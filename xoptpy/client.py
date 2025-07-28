@@ -1,7 +1,7 @@
 """
-AI Registry API Client
+xopt Registry API Client
 
-A client for interacting with the AI Registry API endpoints.
+A client for interacting with the xopt registry API endpoints.
 """
 
 import json
@@ -25,7 +25,7 @@ from .models import (
     VersionInfo,
 )
 from .exceptions import (
-    AIRegistryClientError,
+    XoptRegistryClientError,
     APIError,
     AuthenticationError,
     AuthorizationError,
@@ -39,8 +39,8 @@ from .exceptions import (
 from .config import ClientConfig, load_config, setup_logging
 
 
-class AIRegistryClient:
-    """Client for the AI Registry API."""
+class XoptRegistryClient:
+    """Client for the xopt registry API."""
     
     def __init__(
         self, 
@@ -50,10 +50,10 @@ class AIRegistryClient:
         logger: Optional[logging.Logger] = None
     ):
         """
-        Initialize the AI Registry client.
+        Initialize the xopt registry client.
         
         Args:
-            base_url: Base URL of the AI Registry API (overrides config)
+            base_url: Base URL of the xopt registry API (overrides config)
             timeout: Request timeout in seconds (overrides config)
             config: ClientConfig instance (if not provided, loads from environment/file)
             logger: Optional logger instance
@@ -77,7 +77,7 @@ class AIRegistryClient:
             "Accept": "application/json"
         })
         
-        self.logger.info(f"Initialized AI Registry client for {self.base_url}")
+        self.logger.info(f"Initialized xopt registry client for {self.base_url}")
     
     def _make_request(
         self, 
@@ -111,7 +111,7 @@ class AIRegistryClient:
             raise ConnectionError(f"Failed to connect to {url}: {e}")
         except requests.RequestException as e:
             self.logger.error(f"Request failed for {url}: {e}")
-            raise AIRegistryClientError(f"Request failed: {e}")
+            raise XoptRegistryClientError(f"Request failed: {e}")
         
         self.logger.debug(f"Response status: {response.status_code}")
         
@@ -166,7 +166,7 @@ class AIRegistryClient:
         except Exception as e:
             self.logger.error(f"Unexpected error parsing response: {e}")
             self.logger.debug(f"Raw response data: {data}")
-            raise AIRegistryClientError(f"Failed to parse response: {e}")
+            raise XoptRegistryClientError(f"Failed to parse response: {e}")
     
     # Health endpoints
     
