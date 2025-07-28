@@ -7,7 +7,7 @@
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-  [![GitHub issues](https://img.shields.io/github/issues/your-org/xopt)](https://github.com/your-org/xopt/issues)
+  [![GitHub issues](https://img.shields.io/github/issues/x-opt/xopt)](https://github.com/x-opt/xopt/issues)
 </div>
 
 ---
@@ -120,7 +120,7 @@ spec:
       properties:
         text: {type: string}
     output_schema:
-      type: object  
+      type: object
       properties:
         category: {type: string}
         confidence: {type: number}
@@ -151,7 +151,7 @@ xopt install ml/my-classifier
 
 **Ready to stop rebuilding AI components?**
 
-⭐ **[Star this repo](https://github.com/x-opt/xoptpy)** • 📖 **[Read the docs](https://docs.xopt.dev)** • 💬 **[Join Discord](https://discord.gg/xopt)**
+⭐ **[Star this repo](https://github.com/x-opt/xoptpy)** • 📖 **[Read the docs](https://docs.xopt.dev)** • 💬 **[Join Discord](https://discord.gg/QbXQ82Cz)**
 
 *Building the future of composable AI, one module at a time.* 🚀
 
