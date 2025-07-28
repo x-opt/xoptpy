@@ -96,4 +96,4 @@ xopt search --trending
 - [Get Started](./getting-started) - Install and set up xopt
 - [CLI Usage](./cli-usage) - Learn the command-line interface
 - [Creating Modules](./creating-modules) - Build your own AI modules
-- [API Reference](../api/overview) - Complete API documentation
+- [API Reference](./api/overview) - Complete API documentation

@@ -129,4 +129,4 @@ xopt --verbose health
 - [CLI Usage Guide](./cli-usage) - Detailed CLI command reference
 - [Creating Modules](./creating-modules) - Learn how to build and publish modules
 - [Working with Tools](./working-with-tools) - Manage AI tools and agents
-- [API Reference](../api/overview) - Complete API documentation
+- [API Reference](./api/overview) - Complete API documentation

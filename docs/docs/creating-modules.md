@@ -377,5 +377,5 @@ spec:
 ## Next Steps
 
 - [Working with Tools](./working-with-tools) - Create AI tools and agents
-- [API Reference](../api/overview) - Complete API documentation
+- [API Reference](./api/overview) - Complete API documentation
 - [CLI Usage](./cli-usage) - Command-line reference

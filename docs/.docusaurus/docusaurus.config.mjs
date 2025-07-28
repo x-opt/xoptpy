@@ -28,8 +28,8 @@ export default {
     },
     "experimental_router": "browser"
   },
-  "url": "https://xoptpy.github.io",
-  "baseUrl": "/",
+  "url": "https://x-opt.github.io",
+  "baseUrl": "/xoptpy/",
   "organizationName": "x-opt",
   "projectName": "xoptpy",
   "onBrokenLinks": "throw",

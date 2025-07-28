@@ -5,7 +5,7 @@
   "source": "@site/docs/creating-modules.md",
   "sourceDirName": ".",
   "slug": "/creating-modules",
-  "permalink": "/docs/creating-modules",
+  "permalink": "/xoptpy/docs/creating-modules",
   "draft": false,
   "unlisted": false,
   "editUrl": "https://github.com/x-opt/xoptpy/tree/main/docs/docs/creating-modules.md",
@@ -18,6 +18,10 @@
   "sidebar": "tutorialSidebar",
   "previous": {
     "title": "CLI Usage Guide",
-    "permalink": "/docs/cli-usage"
+    "permalink": "/xoptpy/docs/cli-usage"
+  },
+  "next": {
+    "title": "Working with Tools",
+    "permalink": "/xoptpy/docs/working-with-tools"
   }
 }

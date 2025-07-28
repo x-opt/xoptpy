@@ -19,12 +19,15 @@ const sidebars: SidebarsConfig = {
     'getting-started',
     'cli-usage',
     'creating-modules',
+    'working-with-tools',
   ],
 
   // API documentation sidebar
   apiSidebar: [
     'api/overview',
     'api/client',
+    'api/models',
+    'api/exceptions',
   ],
 };
 

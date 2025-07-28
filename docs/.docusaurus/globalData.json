@@ -1,89 +1,104 @@
 {
   "docusaurus-plugin-content-docs": {
     "default": {
-      "path": "/docs",
+      "path": "/xoptpy/docs",
       "versions": [
         {
           "name": "current",
           "label": "Next",
           "isLast": true,
-          "path": "/docs",
+          "path": "/xoptpy/docs",
           "mainDocId": "intro",
           "docs": [
             {
               "id": "api/client",
-              "path": "/docs/api/client",
+              "path": "/xoptpy/docs/api/client",
+              "sidebar": "apiSidebar"
+            },
+            {
+              "id": "api/exceptions",
+              "path": "/xoptpy/docs/api/exceptions",
+              "sidebar": "apiSidebar"
+            },
+            {
+              "id": "api/models",
+              "path": "/xoptpy/docs/api/models",
               "sidebar": "apiSidebar"
             },
             {
               "id": "api/overview",
-              "path": "/docs/api/overview",
+              "path": "/xoptpy/docs/api/overview",
               "sidebar": "apiSidebar"
             },
             {
               "id": "cli-usage",
-              "path": "/docs/cli-usage",
+              "path": "/xoptpy/docs/cli-usage",
               "sidebar": "tutorialSidebar"
             },
             {
               "id": "creating-modules",
-              "path": "/docs/creating-modules",
+              "path": "/xoptpy/docs/creating-modules",
               "sidebar": "tutorialSidebar"
             },
             {
               "id": "getting-started",
-              "path": "/docs/getting-started",
+              "path": "/xoptpy/docs/getting-started",
               "sidebar": "tutorialSidebar"
             },
             {
               "id": "intro",
-              "path": "/docs/intro",
+              "path": "/xoptpy/docs/intro",
               "sidebar": "tutorialSidebar"
             },
             {
               "id": "tutorial-basics/congratulations",
-              "path": "/docs/tutorial-basics/congratulations"
+              "path": "/xoptpy/docs/tutorial-basics/congratulations"
             },
             {
               "id": "tutorial-basics/create-a-blog-post",
-              "path": "/docs/tutorial-basics/create-a-blog-post"
+              "path": "/xoptpy/docs/tutorial-basics/create-a-blog-post"
             },
             {
               "id": "tutorial-basics/create-a-document",
-              "path": "/docs/tutorial-basics/create-a-document"
+              "path": "/xoptpy/docs/tutorial-basics/create-a-document"
             },
             {
               "id": "tutorial-basics/create-a-page",
-              "path": "/docs/tutorial-basics/create-a-page"
+              "path": "/xoptpy/docs/tutorial-basics/create-a-page"
             },
             {
               "id": "tutorial-basics/deploy-your-site",
-              "path": "/docs/tutorial-basics/deploy-your-site"
+              "path": "/xoptpy/docs/tutorial-basics/deploy-your-site"
             },
             {
               "id": "tutorial-basics/markdown-features",
-              "path": "/docs/tutorial-basics/markdown-features"
+              "path": "/xoptpy/docs/tutorial-basics/markdown-features"
             },
             {
               "id": "tutorial-extras/manage-docs-versions",
-              "path": "/docs/tutorial-extras/manage-docs-versions"
+              "path": "/xoptpy/docs/tutorial-extras/manage-docs-versions"
             },
             {
               "id": "tutorial-extras/translate-your-site",
-              "path": "/docs/tutorial-extras/translate-your-site"
+              "path": "/xoptpy/docs/tutorial-extras/translate-your-site"
+            },
+            {
+              "id": "working-with-tools",
+              "path": "/xoptpy/docs/working-with-tools",
+              "sidebar": "tutorialSidebar"
             }
           ],
           "draftIds": [],
           "sidebars": {
             "tutorialSidebar": {
               "link": {
-                "path": "/docs/intro",
+                "path": "/xoptpy/docs/intro",
                 "label": "intro"
               }
             },
             "apiSidebar": {
               "link": {
-                "path": "/docs/api/overview",
+                "path": "/xoptpy/docs/api/overview",
                 "label": "api/overview"
               }
             }
