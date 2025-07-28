@@ -24,8 +24,8 @@ The GitHub Actions workflow needs proper permissions:
 
 The following files are already configured for your repository:
 
-- `.github/workflows/deploy-docs.yml` - Deploys docs on push to main
-- `.github/workflows/test-docs.yml` - Tests docs on pull requests
+- `.github/workflows/deploy.yml` - Deploys docs on push to main
+- `.github/workflows/test-deploy.yml` - Tests docs on pull requests
 - `docs/docusaurus.config.ts` - Configured for GitHub Pages
 
 ## Deployment Process
@@ -58,7 +58,7 @@ https://x-opt.github.io/xoptpy/
 
 ## Workflow Details
 
-### Deploy Workflow (`.github/workflows/deploy-docs.yml`)
+### Deploy Workflow (`.github/workflows/deploy.yml`)
 
 **Triggers:**
 - Push to `main` branch with changes in `docs/`
@@ -71,7 +71,7 @@ https://x-opt.github.io/xoptpy/
 4. Build Docusaurus site
 5. Deploy to GitHub Pages
 
-### Test Workflow (`.github/workflows/test-docs.yml`)
+### Test Workflow (`.github/workflows/test-deploy.yml`)
 
 **Triggers:**
 - Pull requests with changes in `docs/`
