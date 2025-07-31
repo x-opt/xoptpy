@@ -4,7 +4,11 @@ from .instance import ModuleInstance
 from .decorators import step, module
 from .registry import register
 from .utils import start, details
-from .llm import call_llm
+
+# Import call_llm only when needed to avoid dependency issues
+def call_llm(*args, **kwargs):
+    from .llm import call_llm as _call_llm
+    return _call_llm(*args, **kwargs)
 
 __all__ = [
     'Module',

@@ -55,6 +55,7 @@ beautifulsoup4 = { version = "^4.11.0", optional = true }
 # Vector databases and embeddings
 faiss-cpu = { version = "^1.7.4", optional = true }
 sentence-transformers = { version = "^2.2.0", optional = true }
+toml = "^0.10.2"
 
 [tool.poetry.extras]
 numpy = ["numpy"]

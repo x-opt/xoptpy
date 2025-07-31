@@ -21,7 +21,6 @@ def start(module: str, configurables: Dict[str, Any] = None,
 
 def details(module_name: str) -> Optional[Dict[str, Any]]:
     """Get details about a registered module"""
-    print(client()._modules)
     if module_name in client()._modules:
         mod = client()._modules[module_name]
         return {
