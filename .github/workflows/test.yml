@@ -44,4 +44,5 @@ jobs:
     - name: Test package install
       run: |
         pip install dist/*.whl
+        python -c "import xopt; print('xopt import successful')"
         xopt --help

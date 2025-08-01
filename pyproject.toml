@@ -8,6 +8,7 @@ homepage = "https://github.com/x-opt/xoptpy"
 repository = "https://github.com/x-opt/xoptpy"
 documentation = "https://xoptpy.github.io"
 keywords = ["optimization", "ai", "agentic", "llm", "agents"]
+packages = [{include = "xopt"}]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
