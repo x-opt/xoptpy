@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "xoptpy"
-version = "0.1.0"
+version = "0.1.1"
 description = "eXtreme OPTimization - More optimizing agentic AI"
-authors = ["Your Name <your.email@example.com>"]
+authors = ["Jake Derry"]
 readme = "README.md"
 homepage = "https://github.com/x-opt/xoptpy"
 repository = "https://github.com/x-opt/xoptpy"
-documentation = "https://xoptpy.github.io"
+documentation = "https://docs.xopt.ai"
 keywords = ["optimization", "ai", "agentic", "llm", "agents"]
 packages = [{include = "xopt"}]
 classifiers = [
