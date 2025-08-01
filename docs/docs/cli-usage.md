@@ -4,232 +4,227 @@ sidebar_position: 3
 
 # CLI Usage Guide
 
-The XOptPy CLI provides a command-line interface for interacting with the AI Registry API.
+The xopt CLI provides commands for packaging, installing, and running AI modules in isolated virtual environments.
 
 ## Basic Commands
 
-### Health Check
+### Initialize Project
 
-Check if the API server is running and healthy:
+Create a new xopt project with dependency management:
 
 ```bash
-xopt health
+xopt init
 ```
 
-### Search Components
+Creates `.xopt/deps.toml` for managing project dependencies.
 
-Search for modules and tools:
+### List Installed Modules
+
+Show all installed modules:
 
 ```bash
-# Basic search
-xopt search components "sentiment"
+xopt list
+```
 
-# Search only modules
-xopt search components "sentiment" --type module
-
-# Search only tools  
-xopt search components "validation" --type tool
-
-# Get JSON output
-xopt search components "sentiment" --json-output
+Output shows module names, versions, and installation paths:
+```
+Installed modules:
+  xopt/react@0.1.0 - /home/user/.xopt/modules/xopt_react
+  xopt/calculator@0.1.0 - /home/user/.xopt/modules/xopt_calculator
 ```
 
 ## Module Management
 
-### Upload a Module
+### Package a Module
 
-Upload a module from a YAML manifest file:
-
-```bash
-# Upload with version from manifest
-xopt module upload test_data/simple_module.yaml
-
-# Override version
-xopt module upload test_data/simple_module.yaml --version "2.0.0"
-
-# Override namespace, name, and version
-xopt module upload test_data/simple_module.yaml \
-  --namespace "custom" --name "my-module" --version "1.0.0"
-```
-
-### List Module Versions
+Package a module directory into a `.xopt` archive:
 
 ```bash
-xopt module list-versions examples hello-world
+# Package example modules
+xopt package examples/modules/react
+xopt package examples/modules/calculator
 
-# JSON output
-xopt module list-versions examples hello-world --json-output
+# Package with custom output name
+xopt package examples/modules/react -o custom-react.xopt
 ```
 
-### Get Module Manifest
+This creates a compressed archive containing the module code, dependencies, and metadata.
+
+### Install a Module
+
+Install a packaged module with isolated virtual environment:
 
 ```bash
-# Print to stdout
-xopt module get-manifest examples hello-world 1.0.0
-
-# Save to file (YAML)
-xopt module get-manifest examples hello-world 1.0.0 --output manifest.yaml
-
-# Save to file (JSON) 
-xopt module get-manifest examples hello-world 1.0.0 --output manifest.json
+# Install from .xopt file
+xopt install xopt_react-0.1.0.xopt
+xopt install xopt_calculator-0.1.0.xopt
 ```
 
-### Get Module Dependencies
+Each module gets its own virtual environment in `~/.xopt/modules/`.
+
+### Uninstall a Module
+
+Remove an installed module and its virtual environment:
 
 ```bash
-xopt module get-dependencies nlp sentiment-analyzer 1.0.0
-
-# JSON output
-xopt module get-dependencies nlp sentiment-analyzer 1.0.0 --json-output
+xopt uninstall "xopt/react"
+xopt uninstall "xopt/calculator"
 ```
 
-### Get Module Usage Statistics
+This removes the module directory and all its dependencies.
+
+### Install Project Dependencies
+
+Install all modules declared in `.xopt/deps.toml`:
 
 ```bash
-xopt module get-stats examples hello-world
-
-# JSON output
-xopt module get-stats examples hello-world --json-output
+xopt sync
 ```
 
-## Tool Management
+This reads the project configuration and installs any missing dependencies.
 
-Tool commands have the same structure as module commands:
+## Running Modules
+
+### Execute Installed Modules
+
+Run modules with input data:
 
 ```bash
-# Upload tool
-xopt tool upload test_data/data_validator_tool.yaml
+# Run calculator module
+xopt run "xopt/calculator" "sqrt(16) + 2 * pi"
 
-# List versions
-xopt tool list-versions utils data-validator
+# Run React reasoning module
+xopt run "xopt/react" "What is the area of a circle with radius 5?"
 
-# Get manifest
-xopt tool get-manifest utils data-validator 1.0.0
-
-# Get dependencies
-xopt tool get-dependencies utils data-validator 1.0.0
-
-# Get stats
-xopt tool get-stats utils data-validator
+# Run with config overrides
+xopt run "xopt/react" "Hello" -c '{"tunables": {"react_prompt": "Be concise"}}'
 ```
 
-## YAML Manifest Files
+### Development Mode
 
-### Module Manifest Example
+Run modules directly from source without packaging:
+
+```bash
+# Run from development directory
+xopt dev examples/modules/react "xopt/react" "What is 2+2?"
+```
+
+This is useful during module development for quick testing.
+
+## Reference Modules
+
+### Install Reference Module
+
+Create lightweight module variants with custom configurations:
+
+```bash
+# Create reference module config
+cat > math-tutor-react.toml << EOF
+[module]
+name = "myproject/math-tutor-react"
+base_module = "xopt/react@0.1.0"
+
+[tunables]
+react_prompt = "You are a friendly math tutor for 5th graders..."
+
+[configurables]
+tool_list = ["xopt/calculator:0.1.0"]
+EOF
+
+# Install the reference module
+xopt install-config math-tutor-react.toml
+```
+
+### Run Reference Module
+
+Reference modules run using the base module's virtual environment but with custom settings:
+
+```bash
+# Run with customized behavior
+xopt run "myproject/math-tutor-react" "What is 6 times 8?"
+```
+
+Reference modules are perfect for:
+- Custom prompts for different use cases
+- Different tool configurations
+- Project-specific module variants
+
+## Module Configuration Files
+
+### xopt.yaml - Module Configuration
+
+Each module directory contains an `xopt.yaml` file defining the module:
 
 ```yaml
-apiVersion: "ai-registry/v1"
-kind: "module"
-metadata:
-  name: "sentiment-analyzer"
-  namespace: "nlp"
-  version: "1.0.0"
-  description: "Sentiment analysis module"
-  author: "team@company.com"
-  license: "MIT"
-  tags:
-    - "sentiment"
-    - "nlp"
-spec:
-  interface:
-    input_schema:
-      type: "object"
-      properties:
-        text:
-          type: "string"
-      required: ["text"]
-    output_schema:
-      type: "object"
-      properties:
-        sentiment:
-          type: "string"
-          enum: ["positive", "negative", "neutral"]
-        confidence:
-          type: "number"
-      required: ["sentiment", "confidence"]
-  implementation:
-    type: "function"
-    entry_point: "./sentiment.py:analyze"
-    requirements:
-      - "transformers>=4.21.0"
-  dependencies:
-    modules:
-      - "utils/text-cleaner@1.0.0"
+xopt/react@0.1.0:
+  configurables:
+    tool_list: ["xopt/calculator:0.1.0"]
+  tunables:
+    react_prompt: |
+      You are a helpful AI assistant that can reason through problems step by step.
+      
+      Thought: I need to think about what the user is asking and determine if I need to use any tools.
+      Action: [tool_name] (only if you need to use a tool, otherwise skip this line)  
+      Action Input: [input_for_tool] (only if you used Action, otherwise skip this line)
+      
+      STOP HERE if you used Action. The system will provide the Observation.
+      
+      Final Answer: [your response] (only if no tools were needed)
 ```
 
-### Tool Manifest Example
+### pyproject.toml - Module Dependencies
 
-```yaml
-apiVersion: "ai-registry/v1"
-kind: "tool"
-metadata:
-  name: "data-validator"
-  namespace: "utils"
-  version: "1.0.0"
-  description: "Data validation tool"
-  author: "team@company.com"
-  license: "MIT"
-  tags:
-    - "validation"
-    - "data"
-spec:
-  interface:
-    input_schema:
-      type: "object"
-      properties:
-        data:
-          type: "object"
-        schema:
-          type: "object"
-      required: ["data", "schema"]
-    output_schema:
-      type: "object"
-      properties:
-        is_valid:
-          type: "boolean"
-        errors:
-          type: "array"
-      required: ["is_valid"]
-  implementation:
-    type: "react_agent"
-    entry_point: "./validator.py:ValidationAgent"
-    requirements:
-      - "jsonschema>=4.17.0"
-    reasoning_engine: "openai-gpt4"
+Each module also has a `pyproject.toml` for Python dependencies:
+
+```toml
+[project]
+name = "react"
+version = "0.1.0"
+dependencies = [
+    "xopt @ file:///path/to/xoptpy"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 ```
 
-## Global Options
+## Command-Specific Options
 
-All commands support these global options:
+### Package Options
 
 ```bash
-# Override base URL
-xopt --base-url "http://other-server:8080" health
+# Package with custom output filename
+xopt package examples/modules/react -o custom-name.xopt
+```
 
-# Set timeout
-xopt --timeout 60 search components "sentiment"
+### Run Options
 
-# Enable verbose logging
-xopt --verbose health
+```bash
+# Run with configuration overrides
+xopt run "xopt/react" "input" -c '{"tunables": {"param": "value"}}'
+
+# Run with JSON configuration file
+xopt run "xopt/react" "input" --config-file config.json
 ```
 
 ## Error Handling
 
-The CLI provides specific exit codes for different error conditions:
+The CLI provides helpful error messages and exit codes:
 
 - `0`: Success
-- `1`: General error
-- `404`: Resource not found
+- `1`: General error (module not found, installation failed, etc.)
 
-Use JSON output for programmatic processing:
+Common error scenarios:
 
 ```bash
-# Check if command succeeded
-if xopt search components "nonexistent" --json-output > /dev/null 2>&1; then
-    echo "Found components"
-else
-    echo "No components found or error occurred"
-fi
+# Module not installed
+$ xopt run "nonexistent/module" "test"
+Error: Module nonexistent/module is not installed. Run 'xopt sync' first.
+
+# Invalid module package
+$ xopt install invalid.xopt
+Error installing module: Invalid archive format
 ```
 
 ## Examples
@@ -237,36 +232,62 @@ fi
 ### Complete Workflow
 
 ```bash
-# 1. Check API health
-xopt health
+# 1. Initialize project
+xopt init
 
-# 2. Search for existing components
-xopt search components "sentiment"
+# 2. Package example modules
+xopt package examples/modules/react
+xopt package examples/modules/calculator
 
-# 3. Upload a new module
-xopt module upload my_module.yaml
+# 3. Install modules
+xopt install xopt_react-0.1.0.xopt
+xopt install xopt_calculator-0.1.0.xopt
 
-# 4. List versions of the uploaded module
-xopt module list-versions my-namespace my-module
+# 4. List installed modules
+xopt list
 
-# 5. Get usage statistics
-xopt module get-stats my-namespace my-module
+# 5. Run modules
+xopt run "xopt/calculator" "2 + 2"
+xopt run "xopt/react" "What is the square root of 16?"
 ```
 
-### Batch Operations
+### Reference Module Workflow
 
 ```bash
-# Upload multiple modules
-for file in modules/*.yaml; do
-    xopt module upload "$file"
-done
+# 1. Create custom variant
+cat > precise-math.toml << EOF
+[module]
+name = "myproject/precise-math-react"
+base_module = "xopt/react@0.1.0"
 
-# Search and export all sentiment-related modules
-xopt search components "sentiment" --json-output | \
-    jq -r '.[] | select(.type == "module") | "\(.namespace)/\(.name)"' | \
-    while read module; do
-        namespace=$(echo $module | cut -d'/' -f1)
-        name=$(echo $module | cut -d'/' -f2)
-        xopt module get-stats "$namespace" "$name"
-    done
+[tunables]
+react_prompt = "Be very precise and show all calculation steps."
+EOF
+
+# 2. Install reference module
+xopt install-config precise-math.toml
+
+# 3. Run with custom behavior
+xopt run "myproject/precise-math-react" "Calculate 15% of 240"
+
+# 4. List all modules (base + reference)
+xopt list
+```
+
+### Development Workflow
+
+```bash
+# 1. Create new module directory
+mkdir my-module && cd my-module
+
+# 2. Create module files (xopt.yaml, pyproject.toml, code)
+
+# 3. Test without packaging
+xopt dev . "my-org/my-module" "test input"
+
+# 4. Package when ready
+xopt package .
+
+# 5. Install for production use
+xopt install my-org_my-module-1.0.0.xopt
 ```

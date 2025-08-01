@@ -1,54 +1,110 @@
-# xopt - eXtreme OPTimization
+<div align="center">
 
-More optimizing agentic AI with modular, isolated execution environments.
+# xopt
 
-## Overview
+[![PyPI version](https://badge.fury.io/py/xoptpy.svg)](https://badge.fury.io/py/xoptpy)
+[![PyPI downloads](https://img.shields.io/pypi/dm/xoptpy.svg)](https://pypi.org/project/xoptpy/)
+[![Python versions](https://img.shields.io/pypi/pyversions/xoptpy.svg)](https://pypi.org/project/xoptpy/)
+[![License](https://img.shields.io/pypi/l/xoptpy.svg)](https://github.com/x-opt/xoptpy/blob/main/LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://xoptpy.github.io)
+[![GitHub stars](https://img.shields.io/github/stars/x-opt/xoptpy.svg?style=social&label=Star)](https://github.com/x-opt/xoptpy)
+[![Tests](https://github.com/x-opt/xoptpy/workflows/Test%20and%20Build/badge.svg)](https://github.com/x-opt/xoptpy/actions)
 
-xopt is a modular AI framework that allows you to package, distribute, and run AI modules in isolated virtual environments. Each module can have its own dependencies, configurations, and tunables - perfect for optimization workflows where parameters need to be adjusted between runs.
+### Join the discord!
 
-## Key Features
+[![](https://dcbadge.limes.pink/api/server/https://discord.gg/5A6VzEnK3g)](https://discord.gg/https://discord.gg/5A6VzEnK3g)
 
-- **Isolated Execution**: Each module runs in its own virtual environment
-- **Lightweight Packaging**: Modules packaged as `.xopt` archives (~5-20MB vs 100-500MB containers)  
-- **Persistent Configuration**: Tunables and configurables survive between runs
-- **Project-Based Dependencies**: Declare dependencies once, run many times
-- **Optimization-Friendly**: Modify parameters without reinstalling modules
+**Modular AI framework with isolated execution environments**
 
-## Installation
+*Package, distribute, and run AI modules in lightweight virtual environments*
+
+</div>
+
+## 📝 Overview
+
+xopt is a modular AI framework that allows you to package, distribute, and run AI modules in isolated virtual environments. Each module can have its own dependencies, configurations, and tunables - perfect for AI workflows where parameters need to be adjusted between runs.
+
+## ✨ Key Features
+
+- 🔒 **Isolated Execution** - Each module runs in its own virtual environment
+- 📦 **Lightweight Packaging** - Modules packaged as `.xopt` archives (~5-20MB vs 100-500MB containers)  
+- 💾 **Persistent Configuration** - Tunables and configurables survive between runs
+- 🔗 **Reference Modules** - Create lightweight variants of existing modules with custom settings
+- 📋 **Project-Based Dependencies** - Declare dependencies once, run many times
+- ⚡ **Developer-Friendly** - Modify parameters without reinstalling modules
+
+## 🚀 Installation
+
+<div align="center">
+
+### Quick Install
 
 ```bash
-git clone <repository>
-cd xoptpy
-poetry install
+pip install xoptpy
 ```
 
-## Quick Start
+[![PyPI](https://img.shields.io/badge/PyPI-xoptpy-blue?logo=pypi&logoColor=white)](https://pypi.org/project/xoptpy/)
 
-### 1. Install Example Modules
+*Requires Python 3.9+*
+
+</div>
+
+## 🚀 Quick Start
+
+### 1. Initialize and Set Up Project
+
+```bash
+# Initialize a new xopt project
+xopt init
+
+# This creates .xopt/deps.toml for dependency management
+```
+
+### 2. Install Example Modules
 
 ```bash
 # Package the React reasoning module
-python3 -m xopt package examples/modules/react
+xopt package examples/modules/react
 
 # Package the Calculator module  
-python3 -m xopt package examples/modules/calculator
+xopt package examples/modules/calculator
 
 # Install both modules
-python3 -m xopt install xopt_react-0.1.0.xopt
-python3 -m xopt install xopt_calculator-0.1.0.xopt
+xopt install xopt_react-0.1.0.xopt
+xopt install xopt_calculator-0.1.0.xopt
 ```
 
-### 2. Run Modules
+### 3. Run Modules
 
 ```bash
 # Run calculator module
-python3 -m xopt run "xopt/calculator" "sqrt(16) + 2 * pi"
+xopt run "xopt/calculator" "sqrt(16) + 2 * pi"
 
 # Run React reasoning module
-python3 -m xopt run "xopt/react" "What is the area of a circle with radius 5?"
+xopt run "xopt/react" "What is the area of a circle with radius 5?"
+
+# List all installed modules
+xopt list
 ```
 
-## CLI Commands
+## ⚙️ CLI Commands Reference
+
+After installing with `pip install xoptpy`, all commands are available as `xopt <command>`.
+
+```bash
+xopt --help  # Show all available commands
+```
+
+**Available Commands:**
+- `package` - Package a module directory into .xopt archive
+- `install` - Install a module package (.xopt file)
+- `install-config` - Install a reference module from TOML config
+- `uninstall` - Remove an installed module
+- `list` - List all installed modules
+- `run` - Run an installed module with input
+- `dev` - Run a module directly from development directory
+- `init` - Initialize a new xopt project
+- `sync` - Install project dependencies from .xopt/deps.toml
 
 ### Module Management
 
@@ -56,29 +112,29 @@ python3 -m xopt run "xopt/react" "What is the area of a circle with radius 5?"
 Package a module directory into a `.xopt` archive.
 
 ```bash
-python3 -m xopt package examples/modules/react
-python3 -m xopt package examples/modules/calculator -o my-calc.xopt
+xopt package examples/modules/react
+xopt package examples/modules/calculator -o my-calc.xopt
 ```
 
 #### `xopt install <package.xopt>`
 Install a module package with isolated virtual environment.
 
 ```bash
-python3 -m xopt install xopt_react-0.1.0.xopt
+xopt install xopt_react-0.1.0.xopt
 ```
 
 #### `xopt uninstall <module_name>`
 Remove an installed module.
 
 ```bash
-python3 -m xopt uninstall "xopt/react"
+xopt uninstall "xopt/react"
 ```
 
 #### `xopt list`
 List all installed modules.
 
 ```bash
-python3 -m xopt list
+xopt list
 # Output:
 # Installed modules:
 #   xopt/react@0.1.0 - /home/user/.xopt/modules/xopt_react
@@ -91,18 +147,18 @@ python3 -m xopt list
 Run an installed module with input.
 
 ```bash
-python3 -m xopt run "xopt/calculator" "2 + 2"
-python3 -m xopt run "xopt/react" "What is 5 times 7?"
+xopt run "xopt/calculator" "2 + 2"
+xopt run "xopt/react" "What is 5 times 7?"
 
 # With config overrides
-python3 -m xopt run "xopt/react" "Hello" -c '{"tunables": {"react_prompt": "Be very concise"}}'
+xopt run "xopt/react" "Hello" -c '{"tunables": {"react_prompt": "Be very concise"}}'
 ```
 
 #### `xopt dev <module_dir> <module> "<input>"`
 Run a module directly from development directory (no installation required).
 
 ```bash
-python3 -m xopt dev examples/modules/react "xopt/react" "What is 2+2?"
+xopt dev examples/modules/react "xopt/react" "What is 2+2?"
 ```
 
 ### Project-Based Workflow
@@ -111,7 +167,7 @@ python3 -m xopt dev examples/modules/react "xopt/react" "What is 2+2?"
 Initialize a new xopt project with dependency management.
 
 ```bash
-python3 -m xopt init
+xopt init
 ```
 
 Creates:
@@ -124,23 +180,42 @@ Creates:
 Install all project dependencies declared in `.xopt/deps.toml`.
 
 ```bash
-python3 -m xopt sync
+xopt sync
 ```
 
-#### `xopt prun <module> "<input>"`
-Run module using project-specific configuration.
+### Reference Modules
+
+#### `xopt install-config <config.toml>`
+Install a reference module that inherits from a base module with custom settings.
 
 ```bash
-python3 -m xopt prun "xopt/react" "What is the square root of 144?"
+# Create a custom variant
+cat > math-tutor-react.toml << EOF
+[module]
+name = "myproject/math-tutor-react"
+base_module = "xopt/react@0.1.0"
+
+[tunables]
+react_prompt = "You are a friendly math tutor for 5th graders..."
+
+[configurables]
+tool_list = ["xopt/calculator:0.1.0"]
+EOF
+
+# Install the reference module
+xopt install-config math-tutor-react.toml
+
+# Run the customized module
+xopt run "myproject/math-tutor-react" "What is 6 times 8?"
 ```
 
-## Project Structure
+## 📁 Project Structure
 
 ### Basic Project Setup
 
 ```bash
 # 1. Initialize project
-python3 -m xopt init
+xopt init
 
 # 2. Edit dependencies
 cat > .xopt/deps.toml << EOF
@@ -153,20 +228,11 @@ cat > .xopt/deps.toml << EOF
 "xopt/calculator" = { path = "examples/modules/calculator" }
 EOF
 
-# 3. Create module configurations
-cat > .xopt/xopt-react.toml << EOF
-[tunables]
-react_prompt = "You are a helpful math tutor. Show your work step by step."
+# 3. Install dependencies
+xopt sync
 
-[configurables]
-tool_list = ["xopt/calculator:0.1.0"]
-EOF
-
-# 4. Install dependencies
-python3 -m xopt sync
-
-# 5. Run with project config
-python3 -m xopt prun "xopt/react" "Calculate 15% of 240"
+# 4. Run modules
+xopt run "xopt/react" "Calculate 15% of 240"
 ```
 
 ### Configuration Files
@@ -187,17 +253,21 @@ python3 -m xopt prun "xopt/react" "Calculate 15% of 240"
 default = "https://registry.xopt.ai"
 ```
 
-#### `.xopt/xopt-<module>.toml` - Module Configuration
+#### Reference Module Configuration Files
 ```toml
-# .xopt/xopt-react.toml
+# math-tutor-react.toml - Custom module variant
+[module]
+name = "myproject/math-tutor-react"
+base_module = "xopt/react@0.1.0"
+
 [tunables]
-react_prompt = """Custom prompt for this project..."""
+react_prompt = """You are a friendly math tutor for 5th graders..."""
 
 [configurables]
-tool_list = ["xopt/calculator:0.1.0", "xopt/websearch:1.0.0"]
+tool_list = ["xopt/calculator:0.1.0"]
 ```
 
-## Module Development
+## 🔧 Module Development
 
 ### Creating a Module
 
@@ -256,21 +326,25 @@ xopt.register(my_module)
 
 5. **Package and install**:
 ```bash
-python3 -m xopt package .
-python3 -m xopt install my-org_my-module-1.0.0.xopt
+xopt package .
+xopt install my-org_my-module-1.0.0.xopt
 ```
 
-## Examples
+## 📖 Examples
 
 ### Math Calculation Chain
 ```bash
-python3 -m xopt run "xopt/react" "First calculate 12 * 15, then find the square root of that result"
+xopt run "xopt/react" "First calculate 12 * 15, then find the square root of that result"
 ```
 
-### Custom Configuration
+### Custom Reference Module
 ```bash
 # Create custom React configuration
-cat > .xopt/xopt-react.toml << EOF
+cat > precise-math-react.toml << EOF
+[module]
+name = "myproject/precise-math-react"
+base_module = "xopt/react@0.1.0"
+
 [tunables]
 react_prompt = "You are a precise mathematician. Always show detailed calculations."
 
@@ -278,8 +352,9 @@ react_prompt = "You are a precise mathematician. Always show detailed calculatio
 tool_list = ["xopt/calculator:0.1.0"]
 EOF
 
-# Run with custom config
-python3 -m xopt prun "xopt/react" "What is 25% of 480?"
+# Install and run with custom config
+xopt install-config precise-math-react.toml
+xopt run "myproject/precise-math-react" "What is 25% of 480?"
 ```
 
 ### Optimization Workflow
@@ -298,7 +373,7 @@ for i, prompt in enumerate(prompts):
     config = {"tunables": {"react_prompt": f"You are helpful. {prompt}"}}
     
     result = subprocess.run([
-        "python3", "-m", "xopt", "run", "xopt/react",
+        "xopt", "run", "xopt/react",
         "Calculate the area of a circle with radius 7",
         "-c", json.dumps(config)
     ], capture_output=True, text=True)
@@ -306,35 +381,92 @@ for i, prompt in enumerate(prompts):
     print(f"Config {i+1}: {result.stdout}")
 ```
 
-## Architecture
+## 🏗️ Architecture
 
-- **Virtual Environment Isolation**: Each module gets its own Python environment (~/.xopt/modules/)
-- **Process-Level Execution**: Modules run in separate processes for crash safety
-- **Persistent Configuration**: Tunables stored in module directories survive restarts
-- **Dependency Management**: Poetry-style dependency resolution with .xopt/deps.toml
-- **Trace Generation**: Automatic execution tracing for debugging and optimization
+- 🐍 **Virtual Environment Isolation** - Each module gets its own Python environment (`~/.xopt/modules/`)
+- ⚙️ **Process-Level Execution** - Modules run in separate processes for crash safety
+- 💾 **Persistent Configuration** - Tunables stored in module directories survive restarts
+- 📦 **Dependency Management** - Poetry-style dependency resolution with `.xopt/deps.toml`
+- 🔍 **Trace Generation** - Automatic execution tracing for debugging and analysis
 
-## Development
+## 🛠️ Development
+
+### For Contributors
 
 ```bash
-# Install in development mode
+# Clone and setup development environment
+git clone https://github.com/x-opt/xoptpy
+cd xoptpy
 poetry install
 
 # Run tests
 poetry run pytest
 
+# Test CLI commands
+poetry run xopt --help
+
 # Package for distribution  
 poetry build
 ```
 
-## Contributing
+### For Users
 
+```bash
+# Install from PyPI
+pip install xoptpy
+
+# Verify installation
+xopt --help
+```
+
+## 👥 Community
+
+<div align="center">
+
+[![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Join%20our%20Discord&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/xoptpy)
+
+**Join our community to:**
+- 💬 Get help and support
+- 🚀 Share your modules and use cases  
+- 🐛 Report bugs and request features
+- 🤝 Collaborate on development
+
+</div>
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how to get started:
+
+### 🐛 Reporting Issues
+- Use [GitHub Issues](https://github.com/x-opt/xoptpy/issues) for bug reports
+- Include steps to reproduce and system information
+- Check existing issues before creating new ones
+
+### 🔧 Development Setup
 1. Fork the repository
-2. Create a feature branch
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Add tests
-5. Submit a pull request
+4. Add tests and ensure they pass
+5. Update documentation if needed
+6. Submit a pull request
 
-## License
+### 📋 Pull Request Guidelines
+- Follow the existing code style
+- Include tests for new functionality
+- Update documentation for user-facing changes
+- Keep commits focused and descriptive
 
-MIT License - see LICENSE file for details.
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+
+**Made with ❤️ by the xopt team**
+
+[![GitHub stars](https://img.shields.io/github/stars/x-opt/xoptpy.svg?style=social&label=Star)](https://github.com/x-opt/xoptpy)
+[![Twitter Follow](https://img.shields.io/twitter/follow/xoptpy?style=social)](https://twitter.com/xoptpy)
+
+</div>

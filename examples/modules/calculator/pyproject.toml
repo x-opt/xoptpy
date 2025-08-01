@@ -8,7 +8,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12,<4.0"
 dependencies = [
-    "xopt @ file:///mnt/c/Users/jaked/Documents/dev/xopt/xoptpy"
+    "xoptpy"
 ]
 
 [build-system]

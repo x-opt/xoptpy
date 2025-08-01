@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # Getting Started
 
-This guide will help you install and start using xopt to manage AI modules and tools.
+This guide will help you install and start using xopt to package, install, and run AI modules in isolated environments.
 
 ## Installation
 
@@ -29,99 +29,139 @@ Check that xopt is installed correctly:
 xopt --help
 ```
 
-You should see the xopt CLI help message with available commands.
+You should see the xopt CLI help message with available commands:
+- `package` - Package a module directory
+- `install` - Install a module package
+- `install-config` - Install a reference module
+- `run` - Run an installed module
+- `list` - List installed modules
+- `init` - Initialize a project
+- `sync` - Install project dependencies
 
 ## Basic Usage
 
-### Health Check
+### Initialize a Project
 
-First, check if the xopt registry API is accessible:
-
-```bash
-xopt health
-```
-
-### Search for Components
-
-Search for existing modules and tools in the registry:
+Start by initializing a new xopt project:
 
 ```bash
-# Search for sentiment analysis modules
-xopt search components "sentiment"
-
-# Search only for modules
-xopt search components "sentiment" --type module
-
-# Search only for tools
-xopt search components "validation" --type tool
+xopt init
 ```
 
-### Working with Modules
+This creates a `.xopt/` directory with `deps.toml` for dependency management.
 
-#### Upload a Module
+### Package Example Modules
 
-Create a module manifest file (YAML format) and upload it:
+Package the included example modules:
 
 ```bash
-xopt module upload my_module.yaml
+# Package React reasoning module
+xopt package examples/modules/react
+
+# Package Calculator module
+xopt package examples/modules/calculator
 ```
 
-#### List Module Versions
+This creates `.xopt` archive files that can be installed.
+
+### Install Modules
+
+Install the packaged modules:
 
 ```bash
-xopt module list-versions namespace module-name
+xopt install xopt_react-0.1.0.xopt
+xopt install xopt_calculator-0.1.0.xopt
 ```
 
-#### Get Module Information
+Each module gets its own isolated virtual environment with dependencies.
+
+### Run Modules
+
+Execute installed modules:
 
 ```bash
-# Get module manifest
-xopt module get-manifest namespace module-name version
+# Run calculator module
+xopt run "xopt/calculator" "sqrt(16) + 2 * pi"
 
-# Get module dependencies
-xopt module get-dependencies namespace module-name version
+# Run React reasoning module
+xopt run "xopt/react" "What is the area of a circle with radius 5?"
 
-# Get usage statistics
-xopt module get-stats namespace module-name
+# List all installed modules
+xopt list
 ```
 
-## Configuration
+### Create Reference Modules
 
-### Environment Variables
-
-Set these environment variables to configure xopt:
+Create lightweight variants with custom configurations:
 
 ```bash
-export XOPTPY_BASE_URL="http://localhost:8080"
-export XOPTPY_TIMEOUT=30
-export XOPTPY_LOG_LEVEL="INFO"
+# Create a custom configuration
+cat > math-tutor.toml << EOF
+[module]
+name = "myproject/math-tutor-react"
+base_module = "xopt/react@0.1.0"
+
+[tunables]
+react_prompt = "You are a helpful math tutor. Show your work step by step."
+
+[configurables]
+tool_list = ["xopt/calculator:0.1.0"]
+EOF
+
+# Install the reference module
+xopt install-config math-tutor.toml
+
+# Run with custom behavior
+xopt run "myproject/math-tutor-react" "What is 15% of 240?"
 ```
 
-### Configuration File
+## Project Configuration
 
-Create a `xoptpy.json` file in your project directory:
+### Dependency Management
 
-```json
-{
-  "base_url": "http://localhost:8080",
-  "timeout": 30,
-  "log_level": "INFO"
-}
+Use `.xopt/deps.toml` to declare project dependencies:
+
+```toml
+[modules]
+"xopt/react" = "0.1.0"
+"xopt/calculator" = "0.1.0"
+
+# For development - reference local source
+[sources]
+"xopt/react" = { path = "examples/modules/react" }
+"xopt/calculator" = { path = "examples/modules/calculator" }
 ```
 
-### Command Line Options
-
-Override configuration on the command line:
+### Installing Project Dependencies
 
 ```bash
-# Override base URL
-xopt --base-url "http://other-server:8080" health
+# Install all declared dependencies
+xopt sync
+```
 
-# Set timeout
-xopt --timeout 60 search components "sentiment"
+### Development Workflow
 
-# Enable verbose logging
-xopt --verbose health
+For development, you can run modules directly without packaging:
+
+```bash
+# Run from development directory
+xopt dev examples/modules/react "xopt/react" "What is 2+2?"
+```
+
+### Module Storage
+
+Modules are installed to `~/.xopt/modules/` with isolated virtual environments:
+
+```
+~/.xopt/modules/
+├── xopt_react/
+│   ├── venv/          # Virtual environment
+│   ├── react.py       # Module code
+│   └── xopt.yaml      # Module configuration
+└── xopt_calculator/
+    ├── venv/
+    ├── calculator.py
+    └── xopt.yaml
 ```
 
 ## Next Steps
