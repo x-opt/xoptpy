@@ -1,0 +1,8 @@
+# Calculator module has no tunables or configurables currently
+# This file can be empty or contain future configuration options
+
+[tunables]
+# No tunables for calculator module
+
+[configurables] 
+# No configurables for calculator module

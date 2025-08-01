@@ -1,0 +1,14 @@
+# xopt module dependencies
+[modules]
+"xopt/react" = "0.1.0"
+"xopt/calculator" = "0.1.0"
+
+# Optional: sources for modules (for development)
+[sources]
+"xopt/react" = { path = "examples/modules/react" }
+"xopt/calculator" = { path = "examples/modules/calculator" }
+
+# Optional: registries for finding modules
+[registries]  
+default = "https://registry.xopt.ai"
+local = "file://./packages"
