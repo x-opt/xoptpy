@@ -1,0 +1,87 @@
+name: Release to PyPI
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 0.1.1)'
+        required: true
+        type: string
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write  # Required for trusted publishing to PyPI
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    
+    - name: Update version (if manual trigger)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        poetry version ${{ github.event.inputs.version }}
+        echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+    
+    - name: Get version from tag (if release trigger)
+      if: github.event_name == 'release'
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/v}
+        poetry version $VERSION
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+    
+    - name: Install dependencies
+      run: |
+        poetry install --no-dev
+    
+    - name: Build package
+      run: |
+        poetry build
+    
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        print-hash: true
+    
+    - name: Create GitHub Release (if manual trigger)
+      if: github.event_name == 'workflow_dispatch'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ env.VERSION }}
+        name: Release v${{ env.VERSION }}
+        body: |
+          Release version ${{ env.VERSION }} of xoptpy
+          
+          ## Changes
+          - Package published to PyPI as `xoptpy`
+          - Install with: `pip install xoptpy`
+          
+          ## CLI Usage
+          After installation, use the `xopt` command:
+          - `xopt --help` - Show help
+          - `xopt list` - List installed modules
+          - `xopt install package.xopt` - Install a module
+          - `xopt run "module/name" "input"` - Run a module
+        files: |
+          dist/xoptpy-${{ env.VERSION }}-py3-none-any.whl
+          dist/xoptpy-${{ env.VERSION }}.tar.gz
+        draft: false
+        prerelease: false

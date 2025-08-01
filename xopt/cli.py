@@ -71,7 +71,19 @@ def cmd_run(args):
             sys.exit(1)
         
         module_info = installed[args.module]
-        module_dir = Path(module_info["installed_at"])
+        
+        # For reference modules, use the base module's environment
+        if module_info.get("type") == "reference":
+            base_module = module_info["base_module"] 
+            base_name = base_module.split("@")[0]
+            if base_name not in installed:
+                print(f"Base module {base_name} not installed", file=sys.stderr)
+                sys.exit(1)
+            base_info = installed[base_name]
+            module_dir = Path(base_info["installed_at"])
+        else:
+            module_dir = Path(module_info["installed_at"])
+            
         venv_python = module_dir / "venv" / ("Scripts" if os.name == "nt" else "bin") / "python"
         
         # Prepare config overrides
@@ -84,8 +96,14 @@ def cmd_run(args):
         if config_json:
             cmd.extend(["--config", config_json])
         
+        # For reference modules, run from base module directory
+        if module_info.get("type") == "reference":
+            run_dir = module_dir  # Base module directory
+        else:
+            run_dir = module_dir
+            
         # Run in module's virtual environment
-        result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(module_dir))
+        result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(run_dir))
         
         if result.returncode == 0:
             print(result.stdout.strip())
@@ -172,6 +190,16 @@ def cmd_sync(args):
         sys.exit(1)
 
 
+def cmd_install_config(args):
+    """Install a module configuration file"""
+    try:
+        module_name = client().install_config(args.config_file)
+        print(f"Reference module {module_name} installed successfully")
+    except Exception as e:
+        print(f"Error installing config: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
 def cmd_project_run(args):
     """Run a module using project configuration"""
     try:
@@ -212,13 +240,38 @@ def cmd_project_run(args):
         
         module_info = installed[module_name]
         module_dir = Path(module_info["installed_at"])
-        venv_python = module_dir / "venv" / ("Scripts" if os.name == "nt" else "bin") / "python"
         
-        cmd = [str(venv_python), "-m", "xopt.runner", "--module", module_name, "--input", args.input]
-        if config_overrides:
-            cmd.extend(["--config", json.dumps(config_overrides)])
-        
-        result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(module_dir))
+        # Check if this is a reference module
+        module_toml = module_dir / "module.toml"
+        if module_toml.exists():
+            # This is a reference module - use the base module's venv
+            import toml
+            ref_config = toml.load(module_toml)
+            base_module = ref_config["module"]["base_module"]
+            base_name = base_module.split("@")[0]  # Remove version
+            
+            if base_name not in installed:
+                print(f"Base module {base_name} not installed", file=sys.stderr)
+                sys.exit(1)
+            
+            base_info = installed[base_name]
+            base_dir = Path(base_info["installed_at"])
+            venv_python = base_dir / "venv" / ("Scripts" if os.name == "nt" else "bin") / "python"
+            
+            cmd = [str(venv_python), "-m", "xopt.runner", "--reference", module_name, "--input", args.input]
+            if config_overrides:
+                cmd.extend(["--config", json.dumps(config_overrides)])
+            
+            result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(base_dir))
+        else:
+            # Regular module
+            venv_python = module_dir / "venv" / ("Scripts" if os.name == "nt" else "bin") / "python"
+            
+            cmd = [str(venv_python), "-m", "xopt.runner", "--module", module_name, "--input", args.input]
+            if config_overrides:
+                cmd.extend(["--config", json.dumps(config_overrides)])
+            
+            result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(module_dir))
         
         if result.returncode == 0:
             print(result.stdout.strip())
@@ -319,12 +372,10 @@ def main():
     sync_parser = subparsers.add_parser("sync", help="Sync project dependencies")
     sync_parser.set_defaults(func=cmd_sync)
     
-    # Project run command
-    project_run_parser = subparsers.add_parser("prun", help="Run module with project configuration")
-    project_run_parser.add_argument("module", help="Module name to run")
-    project_run_parser.add_argument("input", help="Input data for the module")
-    project_run_parser.add_argument("-c", "--config", help="JSON config overrides")
-    project_run_parser.set_defaults(func=cmd_project_run)
+    # Install config command
+    install_config_parser = subparsers.add_parser("install-config", help="Install a module configuration")
+    install_config_parser.add_argument("config_file", help="Path to module config file (.toml)")
+    install_config_parser.set_defaults(func=cmd_install_config)
     
     args = parser.parse_args()
     

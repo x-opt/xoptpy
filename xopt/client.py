@@ -74,6 +74,62 @@ class XOptClient:
         print(f"📦 Packaged {module_name}@{version} to {output_path}")
         return output_path
     
+    def install_config(self, config_path: str) -> str:
+        """Install a module configuration (reference-based module)"""
+        config_path = Path(config_path)
+        if not config_path.exists():
+            raise ValueError(f"Config file {config_path} does not exist")
+        
+        # Load config
+        import toml
+        config = toml.load(config_path)
+        
+        if "module" not in config:
+            raise ValueError("Config file must have [module] section")
+        
+        module_info = config["module"]
+        module_name = module_info["name"]
+        base_module = module_info.get("base_module")
+        
+        if not base_module:
+            raise ValueError("Reference-based modules must specify base_module")
+        
+        # Check if base module is installed
+        installed = self.list_installed()
+        base_name = base_module.split("@")[0]
+        if base_name not in installed:
+            raise ValueError(f"Base module {base_name} not installed. Install it first.")
+        
+        # Create module directory
+        safe_name = module_name.replace("/", "_")
+        module_dir = self.modules_dir / safe_name
+        if module_dir.exists():
+            print(f"⚠️  Module {module_name} already installed, removing old version")
+            import shutil
+            shutil.rmtree(module_dir)
+        
+        module_dir.mkdir(parents=True)
+        
+        # Copy config file
+        import shutil
+        shutil.copy2(config_path, module_dir / "module.toml")
+        
+        # Save installation metadata
+        install_info = {
+            "name": module_name,
+            "version": module_info["version"],
+            "installed_at": str(module_dir),
+            "type": "reference",
+            "base_module": base_module,
+            "config": config
+        }
+        
+        with open(module_dir / "install_info.json", "w") as f:
+            json.dump(install_info, f, indent=2)
+        
+        print(f"✅ Installed reference module {module_name}@{module_info['version']}")
+        return module_name
+
     def install(self, package_path: str) -> str:
         """Install a .xopt package with virtual environment"""
         package_path = Path(package_path)

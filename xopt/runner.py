@@ -49,7 +49,107 @@ def run_installed_module(module_name: str, input_data: str, config_overrides: Op
         raise ValueError(f"Module {module_name} is not installed")
     
     module_info = installed_modules[module_name]
+    
+    # Check if this is a reference module
+    if module_info.get("type") == "reference":
+        return run_reference_module(module_name, input_data, config_overrides)
+    
     module_dir = Path(module_info["installed_at"])
+
+
+def run_reference_module(module_name: str, input_data: str, config_overrides: Optional[Dict[str, Any]] = None) -> str:
+    """Run a reference-based module"""
+    from xopt.client import client
+    import toml
+    
+    # Find installed module
+    installed_modules = client().list_installed()
+    module_info = installed_modules[module_name]
+    
+    # Load the reference config
+    module_dir = Path(module_info["installed_at"])
+    config_file = module_dir / "module.toml"
+    ref_config = toml.load(config_file)
+    
+    # Get base module info
+    base_module = module_info["base_module"]
+    base_name = base_module.split("@")[0]
+    
+    if base_name not in installed_modules:
+        raise ValueError(f"Base module {base_name} not installed")
+    
+    # Merge configurations: reference config + overrides
+    final_config = {}
+    
+    # Start with reference module config
+    if "tunables" in ref_config:
+        final_config["tunables"] = ref_config["tunables"].copy()
+    if "configurables" in ref_config:
+        final_config["configurables"] = ref_config["configurables"].copy()
+    
+    # Apply any CLI overrides
+    if config_overrides:
+        if "tunables" in config_overrides:
+            final_config.setdefault("tunables", {}).update(config_overrides["tunables"])
+        if "configurables" in config_overrides:
+            final_config.setdefault("configurables", {}).update(config_overrides["configurables"])
+    
+    # Run the base module with merged config - but don't recurse
+    base_info = installed_modules[base_name]
+    module_dir = Path(base_info["installed_at"])
+    
+    # Load base module configuration
+    import yaml
+    config_path = module_dir / "xopt.yaml"
+    if config_path.exists():
+        with open(config_path) as f:
+            config = yaml.safe_load(f)
+            module_spec = list(config.keys())[0]
+            base_module_config = config[module_spec]
+    else:
+        base_module_config = base_info.get("config", {})
+    
+    # Override base config with reference config
+    if "tunables" in final_config:
+        base_module_config.setdefault("tunables", {}).update(final_config["tunables"])
+    if "configurables" in final_config:
+        base_module_config.setdefault("configurables", {}).update(final_config["configurables"])
+    
+    # Set up environment for module execution
+    import os
+    original_cwd = os.getcwd()
+    os.chdir(module_dir)
+    
+    try:
+        # Load and register the base module
+        module_py = load_module_from_path(module_dir, base_name)
+        
+        # Update client configuration with merged config
+        from xopt.client import client
+        client().config = {module_spec: base_module_config}
+        
+        # Find and start the base module
+        import xopt
+        if base_name in client()._modules:
+            module_instance = xopt.start(
+                module=base_name,
+                configurables=base_module_config.get("configurables", {}),
+                tunables=base_module_config.get("tunables", {})
+            )
+            
+            # Execute the module
+            result = module_instance.call(input_data)
+            
+            # Return result content
+            if hasattr(result, 'content'):
+                return str(result.content)
+            else:
+                return str(result)
+        else:
+            raise ValueError(f"Base module {base_name} not found in registry after loading")
+    
+    finally:
+        os.chdir(original_cwd)
     
     # Load module configuration
     config_path = module_dir / "xopt.yaml"
@@ -106,12 +206,19 @@ def run_installed_module(module_name: str, input_data: str, config_overrides: Op
 def main():
     """Main entry point for module runner"""
     parser = argparse.ArgumentParser(description="Run xopt modules in isolated environments")
-    parser.add_argument("--module", required=True, help="Module name to run")
+    parser.add_argument("--module", help="Module name to run")
+    parser.add_argument("--reference", help="Reference module name to run")
     parser.add_argument("--input", required=True, help="Input data for the module")
     parser.add_argument("--config", help="JSON string with config overrides")
     parser.add_argument("--module-dir", help="Path to module directory (for development)")
     
     args = parser.parse_args()
+    
+    # Validate arguments
+    if not args.module and not args.reference:
+        parser.error("Either --module or --reference must be specified")
+    if args.module and args.reference:
+        parser.error("Cannot specify both --module and --reference")
     
     try:
         # Parse config overrides if provided
@@ -167,7 +274,10 @@ def main():
                 os.chdir(original_cwd)
         else:
             # Production mode - run installed module
-            result = run_installed_module(args.module, args.input, config_overrides)
+            if args.reference:
+                result = run_reference_module(args.reference, args.input, config_overrides)
+            else:
+                result = run_installed_module(args.module, args.input, config_overrides)
             print(result)
     
     except Exception as e:
