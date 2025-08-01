@@ -3,11 +3,8 @@ from typing import List, Optional, Tuple, Dict, Any
 import xopt
 from xopt.models import StepResult, Module, Context
 import json
-import requests
 import math
 import re
-# Import calculator module to register it
-import calculator
 
 
 class ReactInput(BaseModel):

@@ -46,7 +46,7 @@ class XOptClient:
                 return module_config['configurables'][name]
         return []
     
-    def package(self, module_dir: str, output_path: Optional[str] = None) -> str:
+    def package(self, module_dir: str, output_path: Optional[str] = None, output_dir: Optional[str] = None) -> str:
         """Package a module directory into a .xopt archive"""
         module_path = Path(module_dir)
         if not module_path.exists():
@@ -64,7 +64,11 @@ class XOptClient:
         # Create output path if not specified
         if not output_path:
             safe_name = module_name.replace("/", "_")
-            output_path = f"{safe_name}-{version}.xopt"
+            filename = f"{safe_name}-{version}.xopt"
+            if output_dir:
+                output_path = str(Path(output_dir) / filename)
+            else:
+                output_path = filename
         
         # Create package archive
         with tarfile.open(output_path, "w:gz") as tar:
@@ -183,7 +187,15 @@ class XOptClient:
                 
                 # Install xopt in the venv first
                 print("📦 Installing xopt in module environment")
-                subprocess.run([str(venv_python), "-m", "pip", "install", "-e", str(Path(__file__).parent.parent)], check=True)
+                
+                # Try to determine if we're in a development environment or installed
+                xopt_source_path = Path(__file__).parent.parent
+                if (xopt_source_path / "pyproject.toml").exists():
+                    # Development environment - install in editable mode
+                    subprocess.run([str(venv_python), "-m", "pip", "install", "-e", str(xopt_source_path)], check=True)
+                else:
+                    # Installed environment - install from PyPI
+                    subprocess.run([str(venv_python), "-m", "pip", "install", "xoptpy"], check=True)
                 
                 # Install module dependencies
                 if (module_dir / "pyproject.toml").exists():

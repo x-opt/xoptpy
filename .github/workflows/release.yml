@@ -16,6 +16,7 @@ jobs:
     permissions:
       contents: write
       id-token: write  # Required for trusted publishing to PyPI
+    environment: pypi
     
     steps:
     - name: Checkout code
@@ -50,7 +51,7 @@ jobs:
     
     - name: Install dependencies
       run: |
-        poetry install --no-dev
+        poetry install
     
     - name: Build package
       run: |
@@ -65,10 +66,10 @@ jobs:
       if: github.event_name == 'workflow_dispatch'
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: v${{ env.VERSION }}
-        name: Release v${{ env.VERSION }}
+        tag_name: v${{ inputs.VERSION }}
+        name: Release v${{ inputs.VERSION }}
         body: |
-          Release version ${{ env.VERSION }} of xoptpy
+          Release version ${{ inputs.VERSION }} of xoptpy
           
           ## Changes
           - Package published to PyPI as `xoptpy`
@@ -81,7 +82,7 @@ jobs:
           - `xopt install package.xopt` - Install a module
           - `xopt run "module/name" "input"` - Run a module
         files: |
-          dist/xoptpy-${{ env.VERSION }}-py3-none-any.whl
-          dist/xoptpy-${{ env.VERSION }}.tar.gz
+          dist/xoptpy-${{ inputs.VERSION }}-py3-none-any.whl
+          dist/xoptpy-${{ inputs.VERSION }}.tar.gz
         draft: false
         prerelease: false

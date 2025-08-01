@@ -4,374 +4,269 @@ sidebar_position: 4
 
 # Creating Modules
 
-Learn how to create and publish your own AI modules to the xopt registry.
+Learn how to create and package your own AI modules for xopt.
 
 ## Module Structure
 
-A module consists of:
-1. **Manifest file** (YAML) - Defines metadata, interface, and implementation
-2. **Implementation** - The actual code that runs when the module is executed
-3. **Dependencies** - Required packages and other modules
+A module directory consists of:
+1. **xopt.yaml** - Module configuration with tunables and configurables
+2. **pyproject.toml** - Python dependencies and build configuration
+3. **Implementation files** - Python code that implements the module logic
+4. **README.md** (optional) - Documentation for the module
 
-## Creating a Module Manifest
+## Step-by-Step Module Creation
 
-### Basic Module Structure
+### 1. Create Module Directory
 
-Create a `manifest.yaml` file:
-
-```yaml
-apiVersion: "ai-registry/v1"
-kind: "module"
-metadata:
-  name: "my-classifier"
-  namespace: "ml"
-  version: "1.0.0"
-  description: "Custom text classifier"
-  author: "your-email@example.com"
-  license: "MIT"
-  tags:
-    - "classification"
-    - "nlp"
-    - "machine-learning"
-
-spec:
-  interface:
-    input_schema:
-      type: "object"
-      properties:
-        text:
-          type: "string"
-          description: "Text to classify"
-      required: ["text"]
-    
-    output_schema:
-      type: "object"
-      properties:
-        category:
-          type: "string"
-          description: "Predicted category"
-        confidence:
-          type: "number"
-          minimum: 0
-          maximum: 1
-          description: "Confidence score"
-      required: ["category", "confidence"]
-  
-  implementation:
-    type: "function"
-    entry_point: "./classifier.py:classify"
-    requirements:
-      - "scikit-learn>=1.0.0"
-      - "numpy>=1.21.0"
-  
-  dependencies:
-    modules:
-      - "nlp/text-preprocessor@1.2.0"
+```bash
+mkdir my-module
+cd my-module
 ```
 
-### Metadata Fields
+### 2. Create xopt.yaml Configuration
 
-- **name**: Module name (lowercase, hyphens allowed)
-- **namespace**: Organizational namespace (e.g., `nlp`, `ml`, `utils`)
-- **version**: Semantic version (e.g., `1.0.0`)
-- **description**: Brief description of functionality
-- **author**: Author email or name
-- **license**: License type (MIT, Apache-2.0, etc.)
-- **tags**: Searchable keywords
-
-### Interface Definition
-
-Define clear input and output schemas using JSON Schema:
+Define your module's interface and default settings:
 
 ```yaml
-interface:
-  input_schema:
-    type: "object"
-    properties:
-      text:
-        type: "string"
-        description: "Input text to process"
-        maxLength: 10000
-      options:
-        type: "object"
-        properties:
-          language:
-            type: "string"
-            enum: ["en", "es", "fr"]
-            default: "en"
-    required: ["text"]
-  
-  output_schema:
-    type: "object"
-    properties:
-      result:
-        type: "string"
-      metadata:
-        type: "object"
-        properties:
-          processing_time:
-            type: "number"
-          model_version:
-            type: "string"
-    required: ["result"]
+my-org/my-module@1.0.0:
+  configurables:
+    # Static configuration that doesn't change between runs
+    model_name: "default-model"
+    max_tokens: 1000
+  tunables:
+    # Parameters that can be optimized/changed between runs
+    temperature: 0.7
+    prompt_template: "Process this input: {input}"
 ```
 
-## Implementation Types
+### 3. Create pyproject.toml Dependencies
 
-### Function Implementation
+Define Python dependencies:
 
-Most common type - a simple Python function:
+```toml
+[project]
+name = "my-module"
+version = "1.0.0"
+description = "My custom AI module"
+dependencies = [
+    "xopt @ file:///path/to/xoptpy",
+    "requests>=2.25.0",
+    "numpy>=1.21.0"
+]
 
-```yaml
-implementation:
-  type: "function"
-  entry_point: "./my_module.py:process_text"
-  requirements:
-    - "transformers>=4.21.0"
-    - "torch>=1.12.0"
-```
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+### 4. Implement Module Logic
 
-Implementation file (`my_module.py`):
+Create the main module file (e.g., `my_module.py`):
 
 ```python
-def process_text(input_data: dict) -> dict:
-    """
-    Process text according to the module interface.
+import xopt
+from xopt.models import Module, StepResult
+
+@xopt.module
+def my_module() -> Module:
+    module = Module(
+        name="my-org/my-module",
+        version="1.0.0",
+        description="My custom module"
+    )
     
-    Args:
-        input_data: Dictionary matching input_schema
+    @xopt.step
+    def process_input(input_data: str) -> StepResult:
+        # Access tunables and configurables
+        client = xopt.get_client()
+        config = client.config["my-org/my-module@1.0.0"]
         
-    Returns:
-        Dictionary matching output_schema
-    """
-    text = input_data["text"]
+        temperature = config["tunables"]["temperature"]
+        prompt_template = config["tunables"]["prompt_template"]
+        model_name = config["configurables"]["model_name"]
+        
+        # Your module logic here
+        processed_data = prompt_template.format(input=input_data)
+        result = f"Processed with {model_name} at temp {temperature}: {processed_data}"
+        
+        return StepResult(
+            action="response",
+            content=result
+        )
     
-    # Your processing logic here
-    result = analyze_text(text)
-    
-    return {
-        "result": result,
-        "metadata": {
-            "processing_time": 0.5,
-            "model_version": "1.0"
-        }
-    }
+    # Register the step and set as entry point
+    module.register("process_input", process_input, str)
+    module.set_start_step("process_input")
+    return module
+
+# Register the module with xopt
+xopt.register(my_module)
 ```
 
-### Class Implementation
+### 5. Package and Test
 
-For more complex modules:
+```bash
+# Test in development mode
+xopt dev . "my-org/my-module" "test input"
 
-```yaml
-implementation:
-  type: "class"
-  entry_point: "./my_module.py:TextProcessor"
-  requirements:
-    - "transformers>=4.21.0"
-```
+# Package for distribution
+xopt package .
+
+# Install and test
+xopt install my-org_my-module-1.0.0.xopt
+xopt run "my-org/my-module" "hello world"
+## Advanced Examples
+
+### React Reasoning Module
+
+Here's how the React reasoning module is implemented:
 
 ```python
-class TextProcessor:
-    def __init__(self):
-        # Initialize your model/resources
-        self.model = load_model()
+import xopt
+from xopt.models import Module, StepResult
+
+@xopt.module  
+def react_module() -> Module:
+    module = Module(
+        name="xopt/react",
+        version="0.1.0",
+        description="ReAct reasoning with tool usage"
+    )
     
-    def __call__(self, input_data: dict) -> dict:
-        # Process the input
-        return self.process(input_data)
+    @xopt.step
+    def react_step(input_data: str) -> StepResult:
+        client = xopt.get_client()
+        config = client.config["xopt/react@0.1.0"]
+        
+        prompt = config["tunables"]["react_prompt"]
+        tools = config["configurables"]["tool_list"]
+        
+        # Your ReAct reasoning logic here
+        # This would include LLM calls, tool usage, etc.
+        
+        return StepResult(
+            action="response", 
+            content="Processed using ReAct reasoning"
+        )
     
-    def process(self, input_data: dict) -> dict:
-        # Your processing logic
-        return {"result": "processed"}
+    module.register("react_step", react_step, str)
+    module.set_start_step("react_step")
+    return module
+
+xopt.register(react_module)
 ```
 
-### Agent Implementation
+## Configuration Best Practices
 
-For complex AI agents:
+### Tunables vs Configurables
+
+**Tunables** - Parameters that change during optimization:
+- Temperature, learning rates, thresholds
+- Prompt variations, model parameters
+- Values that affect module behavior
+
+**Configurables** - Static settings that rarely change:
+- Model names, file paths, tool lists
+- System settings, API endpoints
+- Infrastructure configuration
+
+### Example Configuration
 
 ```yaml
-implementation:
-  type: "react_agent"
-  entry_point: "./agent.py:MyAgent"
-  requirements:
-    - "langchain>=0.1.0"
-  reasoning_engine: "openai-gpt4"
-  tools:
-    - "web_search"
-    - "calculator"
+my-org/sentiment-analyzer@1.0.0:
+  configurables:
+    model_name: "bert-base-uncased"
+    max_sequence_length: 512
+    device: "cuda"
+  tunables:
+    temperature: 0.7
+    confidence_threshold: 0.8
+    batch_size: 32
 ```
 
-## Dependencies
+## Testing and Development
 
-### Module Dependencies
-
-Reference other modules in the registry:
-
-```yaml
-dependencies:
-  modules:
-    - "nlp/tokenizer@1.0.0"
-    - "utils/data-validator@2.1.0"
-```
-
-### Python Package Requirements
-
-Specify Python packages:
-
-```yaml
-implementation:
-  requirements:
-    - "numpy>=1.21.0"
-    - "pandas>=1.3.0"
-    - "scikit-learn==1.2.0"  # Exact version
-    - "transformers>=4.21.0,<5.0.0"  # Version range
-```
-
-## Testing Your Module
-
-### Local Testing
-
-Test your module locally before uploading:
+### Development Workflow
 
 ```bash
-# Test with sample input
-xopt run . text="sample input"
+# 1. Create and edit your module
+mkdir my-module && cd my-module
 
-# Test with input file
-xopt run . --input test_input.json
+# 2. Test directly without packaging
+xopt dev . "my-org/my-module" "test input"
+
+# 3. Make changes and test again
+xopt dev . "my-org/my-module" "another test"
+
+# 4. Package when ready
+xopt package .
+
+# 5. Install and test final version
+xopt install my-org_my-module-1.0.0.xopt
+xopt run "my-org/my-module" "final test"
 ```
 
-### Validation
-
-Validate your manifest:
-
-```bash
-xopt validate manifest.yaml
-```
-
-## Publishing Your Module
-
-### Upload to Registry
-
-```bash
-# Upload with default settings
-xopt module upload manifest.yaml
-
-# Override version
-xopt module upload manifest.yaml --version "2.0.0"
-
-# Upload to specific namespace
-xopt module upload manifest.yaml --namespace "my-org"
-```
-
-### Versioning Best Practices
-
-Follow semantic versioning:
-- **1.0.0** → **1.0.1**: Bug fixes
-- **1.0.0** → **1.1.0**: New features (backward compatible)
-- **1.0.0** → **2.0.0**: Breaking changes
-
-### Documentation
-
-Include comprehensive documentation:
-
-```yaml
-metadata:
-  description: "Detailed description of what the module does"
-  documentation_url: "https://github.com/user/repo/blob/main/README.md"
-  examples:
-    - input: {"text": "Hello world"}
-      output: {"category": "greeting", "confidence": 0.95}
-```
-
-## Best Practices
-
-### 1. Clear Interfaces
-
-- Use descriptive property names
-- Include detailed descriptions
-- Specify data types and constraints
-- Provide examples
-
-### 2. Error Handling
+### Error Handling in Modules
 
 ```python
-def process_text(input_data: dict) -> dict:
+@xopt.step
+def robust_step(input_data: str) -> StepResult:
     try:
-        text = input_data.get("text", "")
-        if not text:
-            raise ValueError("Text input is required")
+        # Your processing logic
+        result = process_data(input_data)
         
-        result = analyze_text(text)
-        return {"result": result}
-        
+        return StepResult(
+            action="response",
+            content=result
+        )
     except Exception as e:
-        return {
-            "error": str(e),
-            "result": None
-        }
+        # Log error and return graceful failure
+        return StepResult(
+            action="error",
+            content=f"Processing failed: {str(e)}"
+        )
 ```
 
-### 3. Resource Management
+## Distribution and Sharing
 
-- Clean up resources properly
-- Use context managers for file handling
-- Consider memory usage for large models
+### Creating Reference Modules
 
-### 4. Configuration
+Instead of duplicating code, create reference modules for variants:
 
-Support configuration through input parameters:
+```toml
+# math-expert.toml
+[module]
+name = "myproject/math-expert"
+base_module = "xopt/react@0.1.0"
 
-```yaml
-input_schema:
-  properties:
-    text:
-      type: "string"
-    config:
-      type: "object"
-      properties:
-        model_name:
-          type: "string"
-          default: "default-model"
-        batch_size:
-          type: "integer"
-          default: 32
+[tunables]
+react_prompt = "You are an expert mathematician. Show detailed proofs."
+temperature = 0.3
+
+[configurables]
+tool_list = ["xopt/calculator:0.1.0", "xopt/wolfram:0.2.0"]
 ```
 
-## Advanced Topics
-
-### Optimization Parameters
-
-Expose parameters for optimization:
-
-```yaml
-spec:
-  optimization:
-    parameters:
-      learning_rate:
-        type: "float"
-        range: [0.001, 0.1]
-        default: 0.01
-      batch_size:
-        type: "integer"
-        range: [16, 128]
-        default: 32
+```bash
+# Share just the config file
+xopt install-config math-expert.toml
 ```
 
-### Performance Metrics
+### Project-Based Distribution
 
-Define metrics for evaluation:
+Use `.xopt/deps.toml` for team sharing:
 
-```yaml
-spec:
-  metrics:
-    - name: "accuracy"
-      type: "float"
-      higher_is_better: true
-    - name: "latency"
-      type: "float"
-      higher_is_better: false
-      unit: "seconds"
+```toml
+[modules]
+"xopt/react" = "0.1.0"
+"myorg/custom-classifier" = "2.1.0"
+
+[sources]
+"myorg/custom-classifier" = { path = "modules/classifier" }
+```
+
+Team members just run:
+```bash
+git clone repo && cd repo
+xopt sync  # Installs all declared dependencies
 ```
 
 ## Next Steps

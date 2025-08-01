@@ -4,57 +4,58 @@ sidebar_position: 1
 
 # Introduction to xopt
 
-**xopt** is the open source registry for composable AI modules and tools. Think of it as npm for AI components - discover, share, and optimize reusable AI functionality across your entire organization.
+**xopt** is a modular AI framework that allows you to package, distribute, and run AI modules in isolated virtual environments. Each module can have its own dependencies, configurations, and tunables - perfect for optimization workflows where parameters need to be adjusted between runs.
 
 ## What is xopt?
 
-Stop rebuilding the same AI components. Start composing intelligent systems from battle-tested modules.
+Build and run AI modules in lightweight, isolated environments with persistent configuration.
 
 ```bash
-# Install and run any AI module instantly
-xopt run nlp/sentiment-analyzer text="This product is amazing!"
+# Install and run AI modules with isolated dependencies
+xopt run "xopt/react" "What is the area of a circle with radius 5?"
 
-# Compose complex workflows from simple modules
-xopt run research-agent topic="quantum computing" --with nlp/summarizer
+# Create custom module variants with reference configs
+xopt install-config math-tutor-react.toml
+xopt run "myproject/math-tutor-react" "What is 6 times 8?"
 ```
 
 ## Why xopt Exists
 
-**The Problem**: Every team rebuilds the same AI components - sentiment analysis, text summarization, data extraction. This wastes time, creates inconsistencies, and prevents optimization at scale.
+**The Problem**: AI modules often have conflicting dependencies, require complex setup, and can't be easily customized for different use cases without code changes.
 
-**Our Solution**: A centralized registry where teams can:
-- **Share** reusable AI modules and tools
-- **Discover** battle-tested components from the community  
-- **Optimize** entire workflows, not just individual pieces
-- **Compose** complex AI systems from simple building blocks
+**Our Solution**: Isolated module execution with configuration management:
+- **Package** AI modules with their dependencies in lightweight archives
+- **Isolate** execution in virtual environments to prevent conflicts
+- **Customize** modules through reference configs without code changes
+- **Optimize** by adjusting tunables between runs for better performance
 
 ## Key Features
 
-### 🔧 **Instant Module Execution**
+### 🔧 **Isolated Execution**
 ```bash
-# No setup, no configuration - just run
-xopt run nlp/sentiment-analyzer text="Great product!"
+# Each module runs in its own virtual environment
+xopt run "xopt/react" "Calculate the square root of 144"
 ```
 
-### 📦 **npm-like Experience**
-- Semantic versioning and dependency management
-- Global and local module installation
-- Automatic dependency resolution
+### 📦 **Lightweight Packaging**
+- Modules packaged as `.xopt` archives (~5-20MB vs 100-500MB containers)
+- Virtual environment isolation instead of heavy containerization
+- Fast installation and startup times
 
-### 🧩 **True Composability**
-- Modules expose standardized interfaces
-- Chain outputs → inputs seamlessly
-- Build complex workflows from simple parts
+### 🧩 **Reference Modules**
+- Create lightweight variants of existing modules
+- Custom tunables and configurations without code duplication
+- Inherit from base modules while maintaining isolation
 
 ### ⚡ **Optimization Ready**
-- Every module exposes tunable parameters
-- System-wide optimization across module boundaries
-- Real-world performance metrics and benchmarks
+- Persistent tunables survive between runs
+- Modify parameters without reinstalling modules
+- Perfect for parameter tuning and optimization workflows
 
-### 🌍 **Community Driven**
-- Open source registry with public/private modules
-- Community ratings and quality scores
-- Documentation and examples for every module
+### 🏗️ **Project-Based Dependency Management**
+- Declare dependencies in `.xopt/deps.toml`
+- Development-friendly source references
+- Consistent environments across team members
 
 ## Quick Start
 
@@ -67,28 +68,36 @@ pip install xoptpy
 ### Run Your First Module
 
 ```bash
-# Analyze sentiment instantly
-xopt run nlp/sentiment-analyzer text="This startup idea is brilliant!"
+# Initialize a project
+xopt init
 
-# Summarize long text
-xopt run nlp/text-summarizer --input document.txt
+# Package and install example modules
+xopt package examples/modules/react
+xopt install xopt_react-0.1.0.xopt
 
-# Process data in batches
-xopt run data/batch-processor --config batch_config.yaml
+# Run the module
+xopt run "xopt/react" "What is 2 + 2?"
+
+# List installed modules
+xopt list
 ```
 
-### Browse Available Modules
+### Create a Custom Module Variant
 
 ```bash
-# Search the registry
-xopt search sentiment
-xopt search "text processing"
+# Create a reference module config
+cat > math-tutor.toml << EOF
+[module]
+name = "myproject/math-tutor-react"
+base_module = "xopt/react@0.1.0"
 
-# Get module details
-xopt module info nlp/sentiment-analyzer
+[tunables]
+react_prompt = "You are a friendly math tutor for students..."
+EOF
 
-# See what's trending
-xopt search --trending
+# Install and run the custom variant
+xopt install-config math-tutor.toml
+xopt run "myproject/math-tutor-react" "What is 5 times 7?"
 ```
 
 ## Next Steps
