@@ -1,13 +1,11 @@
 name: Release to PyPI
 
 on:
-  push:
   workflow_dispatch:
     inputs:
       version:
         description: 'Version to release (e.g., 0.1.1)'
-        required: false
-        default: '0.1.1'
+        required: true
         type: string
   release:
     types: [published]
