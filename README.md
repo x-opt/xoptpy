@@ -1,3 +1,5 @@
+**Warning! This repo is under active and breaking development. It is not stable enough to be used! This warning will be removed when the project is stable.**
+
 <div align="center">
 
 # xopt
@@ -419,20 +421,6 @@ pip install xoptpy
 xopt --help
 ```
 
-## 👥 Community
-
-<div align="center">
-
-[![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Join%20our%20Discord&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/xoptpy)
-
-**Join our community to:**
-- 💬 Get help and support
-- 🚀 Share your modules and use cases  
-- 🐛 Report bugs and request features
-- 🤝 Collaborate on development
-
-</div>
-
 ## 🤝 Contributing
 
 We welcome contributions! Here's how to get started:
@@ -467,6 +455,5 @@ MIT License - see [LICENSE](LICENSE) file for details.
 **Made with ❤️ by the xopt team**
 
 [![GitHub stars](https://img.shields.io/github/stars/x-opt/xoptpy.svg?style=social&label=Star)](https://github.com/x-opt/xoptpy)
-[![Twitter Follow](https://img.shields.io/twitter/follow/xoptpy?style=social)](https://twitter.com/xoptpy)
 
 </div>
