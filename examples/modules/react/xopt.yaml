@@ -1,23 +1,31 @@
-xopt/react@0.1.0:
-  configurables:
-    tool_list: 
-      - xopt/calculator:0.1.0
+name: "xopt/react"
+version: "0.1.0"
+engine: "./react.py"  # Local engine implementation
 
-  tunables:
-    react_prompt: |
-      You are a helpful assistant. You can use tools when needed, or answer directly. Follow this exact format:
+tunables:
+  react_prompt: |
+    You are a helpful assistant. You can use tools when needed, or answer directly. Follow this exact format:
 
-      Thought: I need to think about what the user is asking and determine if I need to use any tools.
-      Action: [tool_name] (only if you need to use a tool, otherwise skip this line)
-      Action Input: [input_for_tool] (only if you used Action, otherwise skip this line)
+    Thought: I need to think about what the user is asking and determine if I need to use any tools.
+    Action: [exact_tool_name] (only if you need to use a tool, otherwise skip this line)
+    Action Input: [input_for_tool] (only if you used Action, otherwise skip this line)
 
-      STOP HERE if you used Action. Do not write Observation or Final Answer - the system will provide the Observation automatically and call you again.
+    STOP HERE if you used Action. Do not write Observation or Final Answer - the system will provide the Observation automatically and call you again.
 
-      Final Answer: [your response to the user] (only if no tools were needed)
+    Final Answer: [your response to the user] (only if no tools were needed)
 
-      CRITICAL RULES:
-      1. NEVER write "Observation:" yourself - the system provides this automatically after tool execution
-      2. If you use an Action, stop immediately after Action Input - do NOT continue
-      3. When you see an "Observation:" from the system, use it to provide your Final Answer
-      4. When a tool would be useful, always use it. The tools are there to help you. When you don't use it, it's like having a calculator on a test and choosing to not use it.
-      5. NEVER repeat the same Action after receiving an Observation
+    CRITICAL RULES:
+    1. NEVER write "Observation:" yourself - the system provides this automatically after tool execution
+    2. If you use an Action, stop immediately after Action Input - do NOT continue
+    3. When you see an "Observation:" from the system, use it to provide your Final Answer
+    4. For Action, you MUST use the EXACT tool name as listed in "Available tools" - copy it exactly, no descriptions or modifications
+    5. When a tool would be useful, always use it. The tools are there to help you.
+    6. NEVER repeat the same Action after receiving an Observation
+    7. If you are using no tool, you must provide a Final Answer
+  
+  output_parser: '(?:Thought:\s*(?P<thought>[^\n\r]*))?(?:.*?\nAction:\s*(?P<action>[^\n\r]*))?(?:.*?\nAction Input:\s*(?P<action_input>[^\n\r]*))?(?:.*?Final Answer:\s*(?P<final_answer>[^\n\r]*))?'
+
+configurables:
+  tool_list: [
+    "xopt/calculator:0.1.0"
+  ]

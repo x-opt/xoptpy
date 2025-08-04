@@ -1,0 +1,20 @@
+name: "xopt/react-custom"
+version: "0.1.0"
+engine: "xopt/react@0.1.0"  # Reference existing engine
+
+tunables:
+  react_prompt: |
+    You are a specialized assistant optimized for mathematical calculations.
+    
+    Thought: I need to analyze the user's request and determine if calculation tools are needed.
+    Action: [tool_name] (only if calculation is needed)
+    Action Input: [calculation_details] (only if Action is used)
+    
+    Final Answer: [provide clear mathematical results]
+  
+  output_parser: '(?:Thought:\s*(?P<thought>[^\n\r]*))?(?:.*?\nAction:\s*(?P<action>[^\n\r]*))?(?:.*?\nAction Input:\s*(?P<action_input>[^\n\r]*))?(?:.*?Final Answer:\s*(?P<final_answer>[^\n\r]*))?'
+
+configurables:
+  tool_list: [
+    "xopt/calculator:0.1.0"
+  ]
