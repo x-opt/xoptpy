@@ -41,7 +41,7 @@ class XOptClient:
     def configurable(self, name: str, description: str = "") -> Any:
         """Create a configurable parameter that reads from config"""
         # Find the configurable value in config
-        for module_config in self.config.values():
+        for config_key, module_config in self.config.items():
             if 'configurables' in module_config and name in module_config['configurables']:
                 return module_config['configurables'][name]
         return []
@@ -56,8 +56,17 @@ class XOptClient:
         if (module_path / "xopt.yaml").exists():
             with open(module_path / "xopt.yaml") as f:
                 config = yaml.safe_load(f)
-                module_name = list(config.keys())[0].split("@")[0]
-                version = list(config.keys())[0].split("@")[1]
+                
+                # Handle new schema format
+                if 'name' in config and 'version' in config:
+                    module_name = config['name']
+                    version = config['version']
+                    engine = config.get('engine')
+                else:
+                    # Handle legacy format for backwards compatibility
+                    module_name = list(config.keys())[0].split("@")[0]
+                    version = list(config.keys())[0].split("@")[1]
+                    engine = None
         else:
             raise ValueError("Module must have xopt.yaml file")
         
@@ -70,69 +79,26 @@ class XOptClient:
             else:
                 output_path = filename
         
+        # For engine references, validate the referenced engine exists
+        if engine and not engine.startswith("./"):
+            # This is an engine reference - validate it exists in installed modules
+            installed = self.list_installed()
+            engine_name = engine.split("@")[0] if "@" in engine else engine
+            if engine_name not in installed:
+                print(f"⚠️  Warning: Referenced engine '{engine}' is not installed")
+                print(f"   Make sure to install the base engine before using this module")
+        
         # Create package archive
         with tarfile.open(output_path, "w:gz") as tar:
             # Add all module files
             tar.add(module_path, arcname=".")
         
         print(f"📦 Packaged {module_name}@{version} to {output_path}")
+        if engine and not engine.startswith("./"):
+            print(f"   🔗 References engine: {engine}")
+        
         return output_path
     
-    def install_config(self, config_path: str) -> str:
-        """Install a module configuration (reference-based module)"""
-        config_path = Path(config_path)
-        if not config_path.exists():
-            raise ValueError(f"Config file {config_path} does not exist")
-        
-        # Load config
-        import toml
-        config = toml.load(config_path)
-        
-        if "module" not in config:
-            raise ValueError("Config file must have [module] section")
-        
-        module_info = config["module"]
-        module_name = module_info["name"]
-        base_module = module_info.get("base_module")
-        
-        if not base_module:
-            raise ValueError("Reference-based modules must specify base_module")
-        
-        # Check if base module is installed
-        installed = self.list_installed()
-        base_name = base_module.split("@")[0]
-        if base_name not in installed:
-            raise ValueError(f"Base module {base_name} not installed. Install it first.")
-        
-        # Create module directory
-        safe_name = module_name.replace("/", "_")
-        module_dir = self.modules_dir / safe_name
-        if module_dir.exists():
-            print(f"⚠️  Module {module_name} already installed, removing old version")
-            import shutil
-            shutil.rmtree(module_dir)
-        
-        module_dir.mkdir(parents=True)
-        
-        # Copy config file
-        import shutil
-        shutil.copy2(config_path, module_dir / "module.toml")
-        
-        # Save installation metadata
-        install_info = {
-            "name": module_name,
-            "version": module_info["version"],
-            "installed_at": str(module_dir),
-            "type": "reference",
-            "base_module": base_module,
-            "config": config
-        }
-        
-        with open(module_dir / "install_info.json", "w") as f:
-            json.dump(install_info, f, indent=2)
-        
-        print(f"✅ Installed reference module {module_name}@{module_info['version']}")
-        return module_name
 
     def install(self, package_path: str) -> str:
         """Install a .xopt package with virtual environment"""
@@ -155,9 +121,18 @@ class XOptClient:
             
             with open(config_path) as f:
                 config = yaml.safe_load(f)
-                module_spec = list(config.keys())[0]
-                module_name = module_spec.split("@")[0]
-                version = module_spec.split("@")[1]
+                
+                # Handle new schema format
+                if 'name' in config and 'version' in config:
+                    module_name = config['name']
+                    version = config['version']
+                    engine = config.get('engine')
+                else:
+                    # Handle legacy format for backwards compatibility
+                    module_spec = list(config.keys())[0]
+                    module_name = module_spec.split("@")[0]
+                    version = module_spec.split("@")[1]
+                    engine = None
             
             # Create module directory
             module_dir = self.modules_dir / module_name.replace("/", "_")
@@ -176,42 +151,75 @@ class XOptClient:
                 else:
                     shutil.copy2(item, module_dir / item.name)
             
-            # Create virtual environment
-            venv_path = module_dir / "venv"
-            print(f"🐍 Creating virtual environment at {venv_path}")
-            subprocess.run([sys.executable, "-m", "venv", str(venv_path)], check=True)
-            
-            # Install dependencies
-            if (module_dir / "pyproject.toml").exists() or (module_dir / "requirements.txt").exists():
-                venv_python = venv_path / ("Scripts" if os.name == "nt" else "bin") / "python"
+            # Handle engine references vs local engines
+            if engine and not engine.startswith("./"):
+                # This is an engine reference - validate base engine exists
+                installed = self.list_installed()
+                engine_name = engine.split("@")[0] if "@" in engine else engine
+                if engine_name not in installed:
+                    raise ValueError(f"Referenced engine '{engine}' is not installed. Install it first.")
                 
-                # Install xopt in the venv first
-                print("📦 Installing xopt in module environment")
+                print(f"🔗 Module references engine: {engine}")
+                install_info = {
+                    "name": module_name,
+                    "version": version,
+                    "installed_at": str(module_dir),
+                    "type": "engine_reference",
+                    "engine": engine,
+                    "config": config
+                }
+            else:
+                # This is a local engine - create virtual environment
+                venv_path = module_dir / "venv"
+                print(f"🐍 Creating virtual environment at {venv_path}")
+                # Try python3 first, then python
+                python_cmd = "python3"
+                subprocess.run([python_cmd, "-m", "venv", str(venv_path)], check=True)
                 
-                # Try to determine if we're in a development environment or installed
-                xopt_source_path = Path(__file__).parent.parent
-                if (xopt_source_path / "pyproject.toml").exists():
-                    # Development environment - install in editable mode
-                    subprocess.run([str(venv_python), "-m", "pip", "install", "-e", str(xopt_source_path)], check=True)
+                # Install dependencies
+                if (module_dir / "pyproject.toml").exists() or (module_dir / "requirements.txt").exists():
+                    venv_python = venv_path / ("Scripts" if os.name == "nt" else "bin") / "python"
+                    
+                    # Install xopt in the venv first
+                    print("📦 Installing xopt in module environment")
+                    
+                    # Try to determine if we're in a development environment or installed
+                    xopt_source_path = Path(__file__).parent.parent
+                    dev_path = Path("/mnt/c/Users/jaked/Documents/dev/xopt/xoptpy")
+                    
+                    # Check if we can find the development version with the fix
+                    if (dev_path.exists() and (dev_path / "pyproject.toml").exists()):
+                        # Development environment available - install in editable mode with fix
+                        subprocess.run([str(venv_python), "-m", "pip", "install", "-e", str(dev_path)], check=True)
+                    elif (xopt_source_path / "pyproject.toml").exists():
+                        # Fallback to detected source path
+                        subprocess.run([str(venv_python), "-m", "pip", "install", "-e", str(xopt_source_path)], check=True)
+                    else:
+                        # Installed environment - install from PyPI
+                        subprocess.run([str(venv_python), "-m", "pip", "install", "xoptpy"], check=True)
+                    
+                    # Install module dependencies
+                    if (module_dir / "pyproject.toml").exists():
+                        print("📦 Installing module dependencies from pyproject.toml")
+                        subprocess.run([str(venv_python), "-m", "pip", "install", "-e", str(module_dir)], check=True)
+                    else:
+                        print("📦 Installing module dependencies from requirements.txt")
+                        subprocess.run([str(venv_python), "-m", "pip", "install", "-r", str(module_dir / "requirements.txt")], check=True)
+                
+                # Handle config format for backwards compatibility
+                if 'name' in config:
+                    config_data = config
                 else:
-                    # Installed environment - install from PyPI
-                    subprocess.run([str(venv_python), "-m", "pip", "install", "xoptpy"], check=True)
+                    config_data = config[module_spec]
                 
-                # Install module dependencies
-                if (module_dir / "pyproject.toml").exists():
-                    print("📦 Installing module dependencies from pyproject.toml")
-                    subprocess.run([str(venv_python), "-m", "pip", "install", "-e", str(module_dir)], check=True)
-                else:
-                    print("📦 Installing module dependencies from requirements.txt")
-                    subprocess.run([str(venv_python), "-m", "pip", "install", "-r", str(module_dir / "requirements.txt")], check=True)
-            
-            # Save installation metadata
-            install_info = {
-                "name": module_name,
-                "version": version,
-                "installed_at": str(module_dir),
-                "config": config[module_spec]
-            }
+                install_info = {
+                    "name": module_name,
+                    "version": version,
+                    "installed_at": str(module_dir),
+                    "type": "local_engine",
+                    "engine": engine,
+                    "config": config_data
+                }
             
             with open(module_dir / "install_info.json", "w") as f:
                 json.dump(install_info, f, indent=2)

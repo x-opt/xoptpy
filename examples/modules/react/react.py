@@ -35,14 +35,17 @@ class ReactLLMResponse(BaseModel):
         thought_match = re.search(r"Thought:\s*(.+?)(?=\n(?:Action|Final Answer)|\Z)", text, re.DOTALL)
         thought = thought_match.group(1).strip() if thought_match else None
         
-        # Extract action
-        action_match = re.search(r"Action:\s*([^\s\n]+)", text)
+        # Extract action - only match content on the same line as Action:
+        action_match = re.search(r"Action:([^\n]*)", text)
         action = None
         action_input = None
         
         if action_match:
             action_text = action_match.group(1).strip()
-            if action_text.lower() not in ['none', 'null', 'n/a']:
+            # Only set action if it's not empty, not just whitespace, and has actual content
+            if (action_text and 
+                action_text.lower() not in ['none', 'null', 'n/a', ''] and
+                len(action_text.strip()) > 0):
                 action = action_text
                 
                 # Extract action input
@@ -123,6 +126,11 @@ react_prompt = xopt_client.tunable(
     description="Prompt for the ReAct module",
 )
 
+output_parser = xopt_client.tunable(
+    name="output_parser",
+    description="Model to parse LLM output using Pydantic",
+)
+
 tool_list = xopt_client.configurable(
     name="tool_list",
     description="List of tools that the ReAct module can use",
@@ -131,24 +139,61 @@ tool_list = xopt_client.configurable(
 
 
 def parse_react_response(llm_response: str) -> Dict[str, Any]:
-    """Parse LLM response using Pydantic parser"""
-    parsed = ReactLLMResponse.from_text(llm_response)
-    
-    # Convert to dictionary format expected by existing code
-    result = {
-        "thought": parsed.thought or "",
-        "action": parsed.action,
-        "action_input": parsed.action_input,
-        "final_answer": parsed.final_answer
-    }
-    
-    # If we have an action, prioritize it over any premature final answer
-    # The LLM should stop after Action Input and let the system provide the observation
-    if result["action"] and result["action_input"] and result["final_answer"]:
-        # Clear the premature final answer - the LLM should not provide this yet
-        result["final_answer"] = None
-    
-    return result
+    """Parse LLM response using configurable regex parser"""
+    try:
+        # Get the regex pattern from tunable
+        regex_pattern = output_parser()
+
+        print(f"Using regex pattern: {regex_pattern}")
+        
+        # Use the regex pattern to parse the response
+        match = re.search(regex_pattern, llm_response, re.DOTALL)
+        
+        if match:
+            result = {
+                "thought": match.group('thought').strip() if match.group('thought') else "",
+                "action": match.group('action').strip() if match.group('action') else None,
+                "action_input": match.group('action_input').strip() if match.group('action_input') else None,
+                "final_answer": match.group('final_answer').strip() if match.group('final_answer') else None
+            }
+            
+            # Clean up action - only set if it has actual content
+            if result["action"]:
+                action_text = result["action"]
+                if not action_text or action_text.lower() in ['none', 'null', 'n/a', '']:
+                    result["action"] = None
+                    result["action_input"] = None
+            
+            # Strip quotes from action_input if present
+            if result["action_input"]:
+                action_input = result["action_input"]
+                if action_input.startswith('"') and action_input.endswith('"'):
+                    result["action_input"] = action_input[1:-1]
+                elif action_input.startswith("'") and action_input.endswith("'"):
+                    result["action_input"] = action_input[1:-1]
+            
+            # If we have an action, prioritize it over any premature final answer
+            if result["action"] and result["action_input"] and result["final_answer"]:
+                result["final_answer"] = None
+            
+            return result
+        else:
+            # No match found, return empty result
+            return {
+                "thought": "",
+                "action": None,
+                "action_input": None,
+                "final_answer": None
+            }
+    except Exception:
+        # Fallback to original parsing if regex parser fails
+        parsed = ReactLLMResponse.from_text(llm_response)
+        return {
+            "thought": parsed.thought or "",
+            "action": parsed.action,
+            "action_input": parsed.action_input,
+            "final_answer": parsed.final_answer
+        }
 
 
 @xopt.step
@@ -196,13 +241,14 @@ def react_step(step_input: Dict[str, Any]) -> StepResult:
     available_tools = tool_list
     tool_details = []
     for tool in available_tools:
-        tool_details.append(xopt.details(tool))
+        details = xopt.details(tool)
+        tool_details.append(details)
     
     tool_descriptions = []
     for tool in tool_details:
-        tool_descriptions.append(f"{tool['name']}: {tool['long_description']}")
+        tool_descriptions.append(f"Tool name: {tool['name']}\nDescription: {tool['long_description']}")
     
-    tools_text = "\n".join(tool_descriptions) if tool_descriptions else "No tools available."
+    tools_text = "\n\n".join(tool_descriptions) if tool_descriptions else "No tools available."
     
     # Build prompt using context
     base_prompt = react_prompt()
@@ -221,6 +267,8 @@ Response:"""
     context.add_reasoning(llm_response)
         
     parsed = parse_react_response(llm_response)
+
+    print(parsed)
         
     if parsed["final_answer"]:
         return StepResult(
@@ -259,7 +307,7 @@ def react_module() -> Module:
         version="0.1.0",
         description="ReAct framework",
         long_description="This module takes a user's input and generates a response using the ReAct framework. It can call other modules for specific actions. The input is a question or request, and the output is a response based on reasoning and available tools. The question or request can be arbitrary. The success of the response is based on the tools available.",
-        tunables=[react_prompt],
+        tunables=[react_prompt, output_parser],
         configurables=[tool_list]
     )
 
@@ -282,11 +330,11 @@ def react_module() -> Module:
 xopt.register(react_module)
 
 if __name__ == "__main__":
-    # Start the react module
+    # Start the react module - let it load tunables from xopt.yaml
     react = xopt.start(
         module="xopt/react@0.1.0",
         configurables={"tool_list": []},
-        tunables={"react_prompt": react_prompt()}
+        tunables={}  # Let xopt.yaml provide the tunables
     )
     
     # Interactive loop
