@@ -4,29 +4,30 @@ sidebar_position: 1
 
 # Introduction to xopt
 
-**xopt** is a modular AI framework that allows you to package, distribute, and run AI modules in isolated virtual environments. Each module can have its own dependencies, configurations, and tunables - perfect for optimization workflows where parameters need to be adjusted between runs.
+**xopt** is a modular AI framework that allows you to package, distribute, and run AI modules in isolated virtual environments. Each module can have its own dependencies, configurations, and can automatically discover and use other installed modules as tools.
 
 ## What is xopt?
 
-Build and run AI modules in lightweight, isolated environments with persistent configuration.
+Build and run AI modules with cross-module tool integration in lightweight, isolated environments.
 
 ```bash
 # Install and run AI modules with isolated dependencies
 xopt run "xopt/react" "What is the area of a circle with radius 5?"
 
-# Create custom module variants with reference configs
-xopt install-config math-tutor-react.toml
-xopt run "myproject/math-tutor-react" "What is 6 times 8?"
+# Modules automatically discover and use other installed modules as tools
+xopt install xopt_calculator-0.1.0.xopt
+xopt run "xopt/react" "Calculate 23 * 47"  # React uses calculator automatically
 ```
 
 ## Why xopt Exists
 
 **The Problem**: AI modules often have conflicting dependencies, require complex setup, and can't be easily customized for different use cases without code changes.
 
-**Our Solution**: Isolated module execution with configuration management:
+**Our Solution**: Isolated module execution with automatic tool discovery:
 - **Package** AI modules with their dependencies in lightweight archives
-- **Isolate** execution in virtual environments to prevent conflicts
-- **Customize** modules through reference configs without code changes
+- **Isolate** execution in virtual environments to prevent conflicts  
+- **Discover** other installed modules automatically as tools during runtime
+- **Configure** modules through declarative YAML configurations
 - **Optimize** by adjusting tunables between runs for better performance
 
 ## Key Features
@@ -42,10 +43,11 @@ xopt run "xopt/react" "Calculate the square root of 144"
 - Virtual environment isolation instead of heavy containerization
 - Fast installation and startup times
 
-### 🧩 **Reference Modules**
-- Create lightweight variants of existing modules
-- Custom tunables and configurations without code duplication
-- Inherit from base modules while maintaining isolation
+### 🧩 **Cross-Module Tool Integration**
+- Modules automatically discover other installed modules as tools
+- ReAct reasoning modules can use calculator, search, and other tool modules
+- Tool configurations declared in module YAML files
+- Runtime module loading ensures all tools are available
 
 ### ⚡ **Optimization Ready**
 - Persistent tunables survive between runs
@@ -72,32 +74,20 @@ pip install xoptpy
 xopt init
 
 # Package and install example modules
+xopt package examples/modules/calculator
 xopt package examples/modules/react
+xopt install xopt_calculator-0.1.0.xopt
 xopt install xopt_react-0.1.0.xopt
 
-# Run the module
+# Run individual modules
+xopt run "xopt/calculator" "sqrt(16)"
 xopt run "xopt/react" "What is 2 + 2?"
+
+# React automatically uses calculator for math
+xopt run "xopt/react" "Calculate the square root of 156"
 
 # List installed modules
 xopt list
-```
-
-### Create a Custom Module Variant
-
-```bash
-# Create a reference module config
-cat > math-tutor.toml << EOF
-[module]
-name = "myproject/math-tutor-react"
-base_module = "xopt/react@0.1.0"
-
-[tunables]
-react_prompt = "You are a friendly math tutor for students..."
-EOF
-
-# Install and run the custom variant
-xopt install-config math-tutor.toml
-xopt run "myproject/math-tutor-react" "What is 5 times 7?"
 ```
 
 ## Next Steps

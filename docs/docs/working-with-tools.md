@@ -4,445 +4,257 @@ sidebar_position: 5
 
 # Working with Tools
 
-Learn how to create, manage, and optimize AI tools and agents in the xopt registry.
+Learn how xopt modules automatically discover and use other installed modules as tools.
 
-## What are Tools?
+## How Tool Discovery Works
 
-Tools in xopt are AI-powered components that can perform specific tasks or provide capabilities to other modules. Unlike modules that process data, tools are designed to:
-- Interact with external systems
-- Provide reasoning capabilities
-- Execute complex multi-step operations
-- Act as intelligent agents
+xopt modules can automatically discover and use other installed modules as tools during runtime. This enables powerful cross-module interactions like ReAct reasoning agents that can use calculator, search, and other specialized modules.
 
-## Tool Types
+### Automatic Module Loading
 
-### React Agents
+When any module runs, xopt automatically:
 
-Agents that use reasoning and external tools to solve problems:
+1. **Discovers all installed modules** in `~/.xopt/modules/`
+2. **Loads them into the module registry** so they can be called as tools  
+3. **Provides tool information** to modules that need it (like ReAct agents)
 
-```yaml
-apiVersion: "ai-registry/v1"
-kind: "tool"
-metadata:
-  name: "research-agent"
-  namespace: "agents"
-  version: "1.0.0"
-  description: "AI agent for conducting research tasks"
+```bash
+# When you run React, it automatically discovers calculator
+xopt list
+# Output:
+#   xopt/calculator@0.1.0 - /home/user/.xopt/modules/xopt_calculator
+#   xopt/react@0.1.0 - /home/user/.xopt/modules/xopt_react
 
-spec:
-  interface:
-    input_schema:
-      type: "object"
-      properties:
-        topic:
-          type: "string"
-          description: "Research topic"
-        depth:
-          type: "string"
-          enum: ["basic", "detailed", "comprehensive"]
-          default: "basic"
-    output_schema:
-      type: "object"
-      properties:
-        findings:
-          type: "array"
-          items:
-            type: "string"
-        sources:
-          type: "array"
-          items:
-            type: "string"
-        summary:
-          type: "string"
-
-  implementation:
-    type: "react_agent"
-    entry_point: "./research_agent.py:ResearchAgent"
-    reasoning_engine: "openai-gpt4"
-    tools:
-      - "web_search"
-      - "document_reader"
-    requirements:
-      - "langchain>=0.1.0"
-      - "openai>=1.0.0"
+xopt run "xopt/react" "What is 15 * 23?"
+# React automatically uses calculator tool: 15 * 23 = 345
 ```
 
-### Data Processing Tools
+## Tool Configuration
 
-Tools for validation, transformation, and analysis:
+### Declaring Tool Dependencies
+
+Modules declare which tools they can use in their `xopt.yaml` configuration:
 
 ```yaml
-apiVersion: "ai-registry/v1"
-kind: "tool"
-metadata:
-  name: "data-validator"
-  namespace: "utils"
-  version: "1.0.0"
-  description: "Data validation and cleaning tool"
-
-spec:
-  interface:
-    input_schema:
-      type: "object"
-      properties:
-        data:
-          type: "object"
-        schema:
-          type: "object"
-        rules:
-          type: "array"
-          items:
-            type: "string"
-    output_schema:
-      type: "object"
-      properties:
-        is_valid:
-          type: "boolean"
-        errors:
-          type: "array"
-          items:
-            type: "string"
-        cleaned_data:
-          type: "object"
-
-  implementation:
-    type: "function"
-    entry_point: "./validator.py:validate_data"
-    requirements:
-      - "jsonschema>=4.17.0"
-      - "pandas>=1.3.0"
+name: "xopt/react"
+version: "0.1.0"
+tunables:
+  react_prompt: |
+    You are a helpful assistant. You can use tools when needed...
+configurables:
+  tool_list: [
+    "xopt/calculator:0.1.0"
+  ]
 ```
 
-## Creating Tools
+### Tool Resolution
 
-### 1. Define Tool Interface
+At runtime, xopt resolves tool references:
+- `"xopt/calculator:0.1.0"` → Uses the installed `xopt/calculator` module
+- Tool descriptions are provided to ReAct agents so they know what tools are available
+- Tools are called as separate module executions in their own virtual environments
 
-Start with a clear interface specification:
+## ReAct Reasoning with Tools
+
+### How ReAct Modules Work
+
+The React module implements the ReAct (Reasoning + Acting) pattern:
+
+1. **Thought**: LLM thinks about the problem
+2. **Action**: LLM decides to use a tool (e.g., `xopt/calculator`)
+3. **Action Input**: LLM provides input for the tool (e.g., `"15 * 23"`)
+4. **Observation**: Tool executes and returns result (e.g., `345.0`)
+5. **Final Answer**: LLM provides final response using the tool result
+
+### Example ReAct Flow
+
+```bash
+xopt run "xopt/react" "Calculate the square root of 156"
+```
+
+Internal flow:
+```
+Thought: I need to calculate the square root of 156.
+Action: xopt/calculator  
+Action Input: sqrt(156)
+Observation: 12.49 (returned by calculator module)
+Final Answer: The square root of 156 is approximately 12.49.
+```
+
+## Creating Tool-Enabled Modules
+
+### Basic Tool Usage
+
+Create a module that can call other modules as tools:
 
 ```python
-# validator.py
-def validate_data(input_data: dict) -> dict:
+import xopt
+from xopt.models import Module
+
+@xopt.module
+def my_agent() -> Module:
+    module = Module(
+        name="myorg/agent",
+        version="1.0.0",
+        description="Agent that uses tools"
+    )
+    
+    @xopt.step
+    def agent_step(input_data: str):
+        # Get available tools from configuration
+        client = xopt.get_client()
+        config = client.config["myorg/agent@1.0.0"]
+        tool_list = config.get("configurables", {}).get("tool_list", [])
+        
+        # Use xopt.details() to get tool information
+        for tool_name in tool_list:
+            tool_info = xopt.details(tool_name)
+            if tool_info:
+                print(f"Available tool: {tool_info['name']}")
+                print(f"Description: {tool_info['long_description']}")
+        
+        # Call a tool module
+        if "xopt/calculator:0.1.0" in tool_list:
+            # Tools are called as separate module executions
+            result = xopt.call_module("xopt/calculator", "2 + 2")
+            return f"Calculator result: {result}"
+        
+        return "No tools available"
+    
+    module.register("agent_step", agent_step, str)
+    module.set_start_step("agent_step")
+    return module
+
+xopt.register(my_agent)
+```
+
+### Module Configuration
+
+Configure your module to use specific tools:
+
+```yaml
+# myorg_agent/xopt.yaml
+name: "myorg/agent"
+version: "1.0.0"
+configurables:
+  tool_list: [
+    "xopt/calculator:0.1.0",
+    "xopt/search:0.2.0"
+  ]
+tunables:
+  agent_prompt: "You are a helpful agent with access to tools."
+```
+
+## Available Tool Modules
+
+### Calculator Module
+
+Mathematical expression evaluation:
+
+```bash
+# Direct usage
+xopt run "xopt/calculator" "sqrt(16) + 2 * pi"
+
+# Available in React
+xopt run "xopt/react" "What is the area of a circle with radius 5?"
+```
+
+**Capabilities:**
+- Basic arithmetic (`+`, `-`, `*`, `/`)
+- Mathematical functions (`sqrt`, `sin`, `cos`, `tan`, `exp`, `log`)
+- Constants (`pi`, `e`)
+- Safe expression evaluation (no imports allowed)
+
+### React Reasoning Module
+
+ReAct reasoning agent that can use other modules as tools:
+
+```bash
+xopt run "xopt/react" "Solve this step by step: (5 + 3) * sqrt(9)"
+```
+
+**Capabilities:**
+- Step-by-step reasoning
+- Automatic tool selection and usage
+- Tool result integration
+- Conversational responses
+
+## Tool Development Best Practices
+
+### 1. Clear Module Interfaces
+
+Design modules with clear input/output interfaces:
+
+```python
+@xopt.step
+def calculate(step_input) -> float:
     """
-    Validate and clean data according to schema and rules.
+    Evaluates mathematical expressions.
     
     Args:
-        input_data: Dictionary with 'data', 'schema', and 'rules'
+        step_input: String containing mathematical expression
         
     Returns:
-        Dictionary with validation results and cleaned data
+        float: Result of the calculation
+        
+    Raises:
+        ValueError: If expression is invalid or contains imports
     """
-    data = input_data["data"]
-    schema = input_data["schema"]
-    rules = input_data.get("rules", [])
-    
-    errors = []
-    is_valid = True
-    
-    # Validation logic here
-    try:
-        # Schema validation
-        validate_schema(data, schema)
-        
-        # Custom rules validation
-        for rule in rules:
-            validate_rule(data, rule)
-            
-        cleaned_data = clean_data(data, rules)
-        
-    except ValidationError as e:
-        errors.append(str(e))
-        is_valid = False
-        cleaned_data = data
-    
-    return {
-        "is_valid": is_valid,
-        "errors": errors,
-        "cleaned_data": cleaned_data
-    }
+    # Implementation...
 ```
 
-### 2. Agent Implementation
+### 2. Safe Execution
 
-For more complex agents:
+Ensure tools execute safely:
 
 ```python
-# research_agent.py
-from langchain.agents import AgentExecutor, create_react_agent
-from langchain.tools import Tool
-
-class ResearchAgent:
-    def __init__(self):
-        self.tools = self._setup_tools()
-        self.agent = self._create_agent()
+def safe_calculate(expression: str) -> float:
+    # Validate input
+    if 'import' in expression:
+        raise ValueError("Import statements are not allowed")
     
-    def _setup_tools(self):
-        return [
-            Tool(
-                name="web_search",
-                description="Search the web for information",
-                func=self._web_search
-            ),
-            Tool(
-                name="document_reader", 
-                description="Read and analyze documents",
-                func=self._read_document
-            )
-        ]
-    
-    def _create_agent(self):
-        # Create ReAct agent with tools
-        return create_react_agent(
-            llm=self.llm,
-            tools=self.tools,
-            prompt=self.prompt_template
-        )
-    
-    def __call__(self, input_data: dict) -> dict:
-        topic = input_data["topic"]
-        depth = input_data.get("depth", "basic")
-        
-        # Execute research task
-        result = self.agent.invoke({
-            "input": f"Research {topic} with {depth} depth"
-        })
-        
-        return {
-            "findings": result["findings"],
-            "sources": result["sources"],
-            "summary": result["output"]
-        }
+    # Use safe evaluation
+    safe_dict = {'sin': math.sin, 'cos': math.cos, 'pi': math.pi}
+    return eval(expression, {"__builtins__": {}}, safe_dict)
 ```
 
-## Tool Management
+### 3. Good Documentation
 
-### Upload Tools
+Provide clear descriptions in module metadata:
+
+```python
+module = Module(
+    name="xopt/calculator",
+    version="0.1.0",
+    description="A simple calculator module that evaluates mathematical expressions.",
+    long_description="This module evaluates mathematical expressions using Python syntax. Available functions: sin, cos, tan, exp, log, sqrt, pow, abs, floor, ceil, pi, e. Input the mathematical expression directly without quotes."
+)
+```
+
+## Debugging Tool Integration
+
+### Checking Tool Discovery
 
 ```bash
-# Upload tool manifest
-xopt tool upload my_tool.yaml
+# List all installed modules
+xopt list
 
-# Override version
-xopt tool upload my_tool.yaml --version "2.0.0"
+# Run with verbose output to see tool loading
+xopt run "xopt/react" "test" --verbose
 ```
 
-### List and Query Tools
+### Module Registry Inspection
 
-```bash
-# List tool versions
-xopt tool list-versions utils data-validator
+The xopt system automatically loads all installed modules into the registry. You can verify this by checking the module loading process or examining trace files generated during execution.
 
-# Get tool manifest
-xopt tool get-manifest utils data-validator 1.0.0
+### Common Issues
 
-# Get tool dependencies
-xopt tool get-dependencies utils data-validator 1.0.0
-
-# Get usage statistics
-xopt tool get-stats utils data-validator
-```
-
-### Search Tools
-
-```bash
-# Search for tools
-xopt search components "validation" --type tool
-
-# Search for agents
-xopt search components "agent" --type tool
-```
-
-## Tool Integration
-
-### Using Tools in Modules
-
-Reference tools as dependencies:
-
-```yaml
-# In a module manifest
-dependencies:
-  tools:
-    - "utils/data-validator@1.0.0"
-    - "agents/research-agent@2.1.0"
-```
-
-### Composing Workflows
-
-Chain tools together:
-
-```python
-def process_research_data(input_data: dict) -> dict:
-    # Step 1: Validate input data
-    validator = load_tool("utils/data-validator@1.0.0")
-    validation_result = validator({
-        "data": input_data["raw_data"],
-        "schema": input_data["schema"]
-    })
-    
-    if not validation_result["is_valid"]:
-        return {"error": "Invalid input data", "details": validation_result["errors"]}
-    
-    # Step 2: Conduct research
-    research_agent = load_tool("agents/research-agent@2.1.0")
-    research_result = research_agent({
-        "topic": input_data["topic"],
-        "depth": "detailed"
-    })
-    
-    return {
-        "validated_data": validation_result["cleaned_data"],
-        "research_findings": research_result["findings"],
-        "summary": research_result["summary"]
-    }
-```
-
-## Best Practices
-
-### 1. Clear Capabilities
-
-Define what your tool can and cannot do:
-
-```yaml
-metadata:
-  description: "Data validation tool for JSON and CSV formats. Supports schema validation, custom rules, and data cleaning."
-  capabilities:
-    - "JSON schema validation"
-    - "CSV format validation"
-    - "Custom rule enforcement"
-    - "Data cleaning and normalization"
-  limitations:
-    - "Does not support binary data formats"
-    - "Maximum file size: 100MB"
-```
-
-### 2. Error Handling
-
-Implement robust error handling:
-
-```python
-def process_data(input_data: dict) -> dict:
-    try:
-        # Processing logic
-        result = perform_processing(input_data)
-        return {"success": True, "result": result}
-        
-    except ValidationError as e:
-        return {"success": False, "error": "validation_error", "message": str(e)}
-    except ProcessingError as e:
-        return {"success": False, "error": "processing_error", "message": str(e)}
-    except Exception as e:
-        return {"success": False, "error": "unknown_error", "message": "An unexpected error occurred"}
-```
-
-### 3. Resource Management
-
-Handle resources properly:
-
-```python
-class DataProcessor:
-    def __init__(self):
-        self.connection = None
-    
-    def __enter__(self):
-        self.connection = create_connection()
-        return self
-    
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.connection:
-            self.connection.close()
-    
-    def process(self, data):
-        # Use self.connection
-        pass
-```
-
-### 4. Configuration
-
-Support configuration options:
-
-```yaml
-spec:
-  configuration:
-    parameters:
-      timeout:
-        type: "integer"
-        default: 30
-        description: "Request timeout in seconds"
-      retry_count:
-        type: "integer"
-        default: 3
-        description: "Number of retry attempts"
-      model_name:
-        type: "string"
-        default: "gpt-4"
-        description: "LLM model to use"
-```
-
-## Advanced Topics
-
-### Optimization
-
-Tools can be optimized for performance:
-
-```yaml
-spec:
-  optimization:
-    parameters:
-      batch_size:
-        type: "integer"
-        range: [1, 100]
-        default: 10
-      temperature:
-        type: "float"
-        range: [0.0, 2.0]
-        default: 0.7
-    metrics:
-      - name: "accuracy"
-        type: "float"
-        higher_is_better: true
-      - name: "latency"
-        type: "float"
-        higher_is_better: false
-```
-
-### Monitoring
-
-Implement monitoring and logging:
-
-```python
-import logging
-from xopt.monitoring import track_usage, log_performance
-
-def process_with_monitoring(input_data: dict) -> dict:
-    with track_usage("data-validator", "1.0.0"):
-        start_time = time.time()
-        
-        try:
-            result = process_data(input_data)
-            
-            # Log success metrics
-            log_performance(
-                tool="data-validator",
-                operation="validation",
-                duration=time.time() - start_time,
-                success=True
-            )
-            
-            return result
-            
-        except Exception as e:
-            # Log error metrics
-            log_performance(
-                tool="data-validator",
-                operation="validation", 
-                duration=time.time() - start_time,
-                success=False,
-                error=str(e)
-            )
-            raise
-```
+1. **Tool not found**: Ensure the tool module is installed with `xopt list`
+2. **Version mismatch**: Check that tool_list references match installed versions
+3. **Configuration errors**: Verify xopt.yaml syntax and tool_list format
 
 ## Next Steps
 
+- [Creating Modules](./creating-modules) - Learn how to build modules that can serve as tools  
+- [CLI Usage](./cli-usage) - Command-line reference for managing modules
 - [API Reference](./api/overview) - Complete API documentation
-- [Creating Modules](./creating-modules) - Learn about modules vs tools
-- [CLI Usage](./cli-usage) - Command-line reference

@@ -111,43 +111,38 @@ xopt dev examples/modules/react "xopt/react" "What is 2+2?"
 
 This is useful during module development for quick testing.
 
-## Reference Modules
+## Module Traces and Debugging
 
-### Install Reference Module
+### Execution Traces
 
-Create lightweight module variants with custom configurations:
-
-```bash
-# Create reference module config
-cat > math-tutor-react.toml << EOF
-[module]
-name = "myproject/math-tutor-react"
-base_module = "xopt/react@0.1.0"
-
-[tunables]
-react_prompt = "You are a friendly math tutor for 5th graders..."
-
-[configurables]
-tool_list = ["xopt/calculator:0.1.0"]
-EOF
-
-# Install the reference module
-xopt install-config math-tutor-react.toml
-```
-
-### Run Reference Module
-
-Reference modules run using the base module's virtual environment but with custom settings:
+xopt automatically generates execution traces for debugging and analysis:
 
 ```bash
-# Run with customized behavior
-xopt run "myproject/math-tutor-react" "What is 6 times 8?"
+# Run a module - trace files are generated automatically
+xopt run "xopt/react" "Calculate 5 * 7"
+
+# Traces are saved in the module directory
+ls ~/.xopt/modules/xopt_react/trace_*.json
 ```
 
-Reference modules are perfect for:
-- Custom prompts for different use cases
-- Different tool configurations
-- Project-specific module variants
+Trace files contain:
+- Module execution steps
+- LLM calls and responses
+- Tool interactions  
+- Timing information
+- Error details
+
+### Development Mode
+
+Test modules during development without packaging:
+
+```bash
+# Run directly from source directory
+xopt dev examples/modules/react "xopt/react" "test input"
+
+# Useful for iterative development
+xopt dev . "myorg/my-module" "debug this"
+```
 
 ## Module Configuration Files
 
@@ -251,27 +246,21 @@ xopt run "xopt/calculator" "2 + 2"
 xopt run "xopt/react" "What is the square root of 16?"
 ```
 
-### Reference Module Workflow
+### Cross-Module Tool Usage
 
 ```bash
-# 1. Create custom variant
-cat > precise-math.toml << EOF
-[module]
-name = "myproject/precise-math-react"
-base_module = "xopt/react@0.1.0"
+# 1. Install multiple modules
+xopt install xopt_calculator-0.1.0.xopt
+xopt install xopt_react-0.1.0.xopt
 
-[tunables]
-react_prompt = "Be very precise and show all calculation steps."
-EOF
+# 2. React automatically discovers calculator as a tool
+xopt run "xopt/react" "What is 15% of 240?"
 
-# 2. Install reference module
-xopt install-config precise-math.toml
-
-# 3. Run with custom behavior
-xopt run "myproject/precise-math-react" "Calculate 15% of 240"
-
-# 4. List all modules (base + reference)
+# 3. View available modules and their relationships
 xopt list
+
+# 4. Check configuration to see tool dependencies
+cat ~/.xopt/modules/xopt_react/xopt.yaml
 ```
 
 ### Development Workflow

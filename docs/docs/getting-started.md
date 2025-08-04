@@ -55,11 +55,11 @@ This creates a `.xopt/` directory with `deps.toml` for dependency management.
 Package the included example modules:
 
 ```bash
-# Package React reasoning module
-xopt package examples/modules/react
-
-# Package Calculator module
+# Package Calculator module first (React uses it as a tool)
 xopt package examples/modules/calculator
+
+# Package React reasoning module  
+xopt package examples/modules/react
 ```
 
 This creates `.xopt` archive files that can be installed.
@@ -69,8 +69,9 @@ This creates `.xopt` archive files that can be installed.
 Install the packaged modules:
 
 ```bash
-xopt install xopt_react-0.1.0.xopt
+# Install calculator first so React can discover it
 xopt install xopt_calculator-0.1.0.xopt
+xopt install xopt_react-0.1.0.xopt
 ```
 
 Each module gets its own isolated virtual environment with dependencies.
@@ -80,40 +81,42 @@ Each module gets its own isolated virtual environment with dependencies.
 Execute installed modules:
 
 ```bash
-# Run calculator module
+# Run calculator module directly
 xopt run "xopt/calculator" "sqrt(16) + 2 * pi"
 
-# Run React reasoning module
+# Run React reasoning module (automatically discovers calculator)
 xopt run "xopt/react" "What is the area of a circle with radius 5?"
+
+# React uses calculator tool for math questions
+xopt run "xopt/react" "Calculate 15 * 23"
 
 # List all installed modules
 xopt list
 ```
 
-### Create Reference Modules
+### Understanding Tool Configuration
 
-Create lightweight variants with custom configurations:
+Modules can be configured to use other modules as tools. The React module automatically discovers and uses the calculator:
 
 ```bash
-# Create a custom configuration
-cat > math-tutor.toml << EOF
-[module]
-name = "myproject/math-tutor-react"
-base_module = "xopt/react@0.1.0"
-
-[tunables]
-react_prompt = "You are a helpful math tutor. Show your work step by step."
-
-[configurables]
-tool_list = ["xopt/calculator:0.1.0"]
-EOF
-
-# Install the reference module
-xopt install-config math-tutor.toml
-
-# Run with custom behavior
-xopt run "myproject/math-tutor-react" "What is 15% of 240?"
+# View React module configuration
+cat ~/.xopt/modules/xopt_react/xopt.yaml
 ```
+
+You'll see the tool configuration:
+```yaml
+name: "xopt/react"
+version: "0.1.0"
+tunables:
+  react_prompt: |
+    You are a helpful assistant. You can use tools when needed...
+configurables:
+  tool_list: [
+    "xopt/calculator:0.1.0"
+  ]
+```
+
+When React runs, it automatically loads all installed modules and can call the calculator when needed for math problems.
 
 ## Project Configuration
 
