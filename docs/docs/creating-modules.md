@@ -28,15 +28,16 @@ cd my-module
 Define your module's interface and default settings:
 
 ```yaml
-my-org/my-module@1.0.0:
-  configurables:
-    # Static configuration that doesn't change between runs
-    model_name: "default-model"
-    max_tokens: 1000
-  tunables:
-    # Parameters that can be optimized/changed between runs
-    temperature: 0.7
-    prompt_template: "Process this input: {input}"
+name: "my-org/my-module"
+version: "1.0.0"
+configurables:
+  # Static configuration that doesn't change between runs
+  model_name: "default-model"
+  max_tokens: 1000
+tunables:
+  # Parameters that can be optimized/changed between runs
+  temperature: 0.7
+  prompt_template: "Process this input: {input}"
 ```
 
 ### 3. Create pyproject.toml Dependencies
@@ -49,8 +50,8 @@ name = "my-module"
 version = "1.0.0"
 description = "My custom AI module"
 dependencies = [
-    "xopt @ file:///path/to/xoptpy",
-    "requests>=2.25.0",
+    "xoptpy",
+    "requests>=2.25.0", 
     "numpy>=1.21.0"
 ]
 
@@ -74,26 +75,26 @@ def my_module() -> Module:
     )
     
     @xopt.step
-    def process_input(input_data: str) -> StepResult:
-        # Access tunables and configurables
-        client = xopt.get_client()
-        config = client.config["my-org/my-module@1.0.0"]
+    def process_input(input_data: str) -> str:
+        # Access configurables and tunables using xopt client functions  
+        from xopt.client import client
         
-        temperature = config["tunables"]["temperature"]
-        prompt_template = config["tunables"]["prompt_template"]
-        model_name = config["configurables"]["model_name"]
+        # Configurables are accessed via the configurable() function
+        model_name = client().configurable("model_name", "Model name to use")
+        max_tokens = client().configurable("max_tokens", "Maximum tokens")
+        
+        # Tunables are accessed via the tunable() function  
+        temperature = client().tunable("temperature", "Temperature for generation")
+        prompt_template = client().tunable("prompt_template", "Prompt template")
         
         # Your module logic here
         processed_data = prompt_template.format(input=input_data)
-        result = f"Processed with {model_name} at temp {temperature}: {processed_data}"
+        result = f"Processed with {model_name} (max_tokens={max_tokens}, temp={temperature}): {processed_data}"
         
-        return StepResult(
-            action="response",
-            content=result
-        )
+        return result
     
     # Register the step and set as entry point
-    module.register("process_input", process_input, str)
+    module.register("process_input", process_input, str, str)
     module.set_start_step("process_input")
     return module
 

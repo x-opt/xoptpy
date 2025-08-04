@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xoptpy"
-version = "0.1.1"
+version = "0.1.2"
 description = "eXtreme OPTimization - More optimizing agentic AI"
 authors = ["Jake Derry"]
 readme = "README.md"
